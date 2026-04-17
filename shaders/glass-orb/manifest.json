@@ -1,43 +1,79 @@
 {
 	"id": "glass-orb",
-	"version": 1,
+	"version": 2,
 	"label": "Glass Orb",
-	"description": "A refractive glass sphere over a hue-shifted gradient background.",
+	"description": "Photorealistic glass/chrome sphere with chromatic dispersion, procedural studio HDR environment, Schlick fresnel, and sharp specular.",
 	"uniforms": [
 		{
 			"name": "uIOR",
 			"type": "float",
-			"range": [1.0, 2.0],
-			"default": 1.48,
+			"range": [1.0, 2.4],
+			"default": 1.5,
 			"label": "IOR",
-			"group": "Glass",
-			"storage": "uint8"
-		},
-		{
-			"name": "uRadius",
-			"type": "float",
-			"range": [0.1, 0.9],
-			"default": 0.42,
-			"label": "Radius",
 			"group": "Glass",
 			"storage": "uint8"
 		},
 		{
 			"name": "uDispersion",
 			"type": "float",
-			"range": [0.0, 0.1],
+			"range": [0.0, 0.15],
 			"default": 0.03,
 			"label": "Dispersion",
 			"group": "Glass",
 			"storage": "uint8"
 		},
 		{
-			"name": "uBgHue",
+			"name": "uRadius",
+			"type": "float",
+			"range": [0.15, 0.95],
+			"default": 0.45,
+			"label": "Radius",
+			"group": "Glass",
+			"storage": "uint8"
+		},
+		{
+			"name": "uWobble",
+			"type": "float",
+			"range": [0.0, 0.5],
+			"default": 0.05,
+			"label": "Surface Wobble",
+			"group": "Glass",
+			"storage": "uint8"
+		},
+		{
+			"name": "uRoughness",
+			"type": "float",
+			"range": [0.0, 0.3],
+			"default": 0.04,
+			"label": "Roughness",
+			"group": "Glass",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvHue",
 			"type": "float",
 			"range": [0.0, 1.0],
 			"default": 0.58,
-			"label": "Background Hue",
-			"group": "Scene",
+			"label": "Env Hue",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvBright",
+			"type": "float",
+			"range": [0.3, 2.0],
+			"default": 1.0,
+			"label": "Env Bright",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uFloorMix",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.35,
+			"label": "Floor Mix",
+			"group": "Environment",
 			"storage": "uint8"
 		}
 	]
