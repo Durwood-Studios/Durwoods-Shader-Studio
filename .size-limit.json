@@ -1,0 +1,8 @@
+[
+	{
+		"name": "runtime (min+gzip)",
+		"path": "lib/runtime/index.ts",
+		"limit": "2 KB",
+		"ignore": ["react", "react-dom"]
+	}
+]

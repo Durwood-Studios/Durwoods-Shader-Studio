@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+echo "→ lint-staged (biome + prettier on staged files)"
+npx lint-staged
+
+echo "→ typecheck (tsc --noEmit)"
+npx tsc --noEmit
+
+echo "→ lint (biome check)"
+npx @biomejs/biome check .

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+html,
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#__next,
+body > div:first-child {
+	height: 100%;
+}

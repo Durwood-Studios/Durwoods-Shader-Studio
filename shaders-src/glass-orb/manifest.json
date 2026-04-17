@@ -1,0 +1,44 @@
+{
+	"id": "glass-orb",
+	"version": 1,
+	"label": "Glass Orb",
+	"description": "A refractive glass sphere over a hue-shifted gradient background.",
+	"uniforms": [
+		{
+			"name": "uIOR",
+			"type": "float",
+			"range": [1.0, 2.0],
+			"default": 1.48,
+			"label": "IOR",
+			"group": "Glass",
+			"storage": "uint8"
+		},
+		{
+			"name": "uRadius",
+			"type": "float",
+			"range": [0.1, 0.9],
+			"default": 0.42,
+			"label": "Radius",
+			"group": "Glass",
+			"storage": "uint8"
+		},
+		{
+			"name": "uDispersion",
+			"type": "float",
+			"range": [0.0, 0.1],
+			"default": 0.03,
+			"label": "Dispersion",
+			"group": "Glass",
+			"storage": "uint8"
+		},
+		{
+			"name": "uBgHue",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.58,
+			"label": "Background Hue",
+			"group": "Scene",
+			"storage": "uint8"
+		}
+	]
+}
