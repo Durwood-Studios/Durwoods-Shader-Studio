@@ -4,12 +4,12 @@ A refractive glass sphere rendered in a single WebGL 1 fragment shader.
 
 ## Uniforms
 
-| Name          | Range       | Default | Description                              |
-|---------------|-------------|---------|------------------------------------------|
-| `uIOR`        | 1.0 – 2.0   | 1.48    | Index of refraction (glass ≈ 1.5)        |
-| `uRadius`     | 0.1 – 0.9   | 0.42    | Sphere radius in normalised screen units |
-| `uDispersion` | 0.0 – 0.1   | 0.03    | Chromatic aberration spread across RGB   |
-| `uBgHue`      | 0.0 – 1.0   | 0.58    | Base hue of the gradient background      |
+| Name          | Range     | Default | Description                              |
+| ------------- | --------- | ------- | ---------------------------------------- |
+| `uIOR`        | 1.0 – 2.0 | 1.48    | Index of refraction (glass ≈ 1.5)        |
+| `uRadius`     | 0.1 – 0.9 | 0.42    | Sphere radius in normalised screen units |
+| `uDispersion` | 0.0 – 0.1 | 0.03    | Chromatic aberration spread across RGB   |
+| `uBgHue`      | 0.0 – 1.0 | 0.58    | Base hue of the gradient background      |
 
 ## Technique
 

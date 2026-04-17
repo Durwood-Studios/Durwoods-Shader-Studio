@@ -1,6 +1,7 @@
 // lib/url-codec/index.ts
 // Binary-packed base64url codec. No dependencies. Vanilla TS strict.
-// Format: `${shaderId}#v${version}.${base64url(packedBytes)}`
+// Format: `${shaderId}.v${version}.${base64url(packedBytes)}`
+// Legacy format (backward-compat): `${shaderId}#v${version}.${base64url(packedBytes)}`
 
 import type { ShaderManifest, UniformDef } from "../runtime/index";
 
@@ -146,7 +147,7 @@ export function encode(
 	}
 
 	const bytes = new Uint8Array(buf);
-	return `${shaderId}#v${version}.${toBase64Url(bytes)}`;
+	return `${shaderId}.v${version}.${toBase64Url(bytes)}`;
 }
 
 export function decode(
@@ -154,11 +155,24 @@ export function decode(
 	manifest: ShaderManifest,
 ): { shaderId: string; version: number; config: Record<string, number | number[]> } | null {
 	try {
-		const hashIdx = hash.indexOf("#v");
-		if (hashIdx === -1) return null;
+		let shaderId: string;
+		let rest: string;
 
-		const shaderId = hash.slice(0, hashIdx);
-		const rest = hash.slice(hashIdx + 2); // after "#v"
+		// New format: `${shaderId}.v${version}.${base64url}`
+		const newFmtIdx = hash.indexOf(".v");
+		// Legacy format: `${shaderId}#v${version}.${base64url}`
+		const legacyFmtIdx = hash.indexOf("#v");
+
+		if (newFmtIdx !== -1) {
+			shaderId = hash.slice(0, newFmtIdx);
+			rest = hash.slice(newFmtIdx + 2); // after ".v"
+		} else if (legacyFmtIdx !== -1) {
+			shaderId = hash.slice(0, legacyFmtIdx);
+			rest = hash.slice(legacyFmtIdx + 2); // after "#v"
+		} else {
+			return null;
+		}
+
 		const dotIdx = rest.indexOf(".");
 		if (dotIdx === -1) return null;
 

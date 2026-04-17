@@ -7,7 +7,7 @@ interface UniformSlice {
 	uniforms: Record<string, UniformValue>;
 	setUniform: (name: string, value: UniformValue) => void;
 	setUniforms: (cfg: Record<string, UniformValue>) => void;
-	resetUniforms: () => void;
+	resetUniforms: (defaults: Record<string, UniformValue>) => void;
 }
 
 interface ShaderSlice {
@@ -32,7 +32,7 @@ export const useStore = create<StudioStore>()(
 				set((state) => ({
 					uniforms: { ...state.uniforms, ...cfg },
 				})),
-			resetUniforms: () => set({ uniforms: {} }),
+			resetUniforms: (defaults) => set({ uniforms: { ...defaults } }),
 
 			// Shader slice
 			activeShaderId: DEFAULT_SHADER_ID,

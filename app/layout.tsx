@@ -1,10 +1,25 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
 
+export const viewport: Viewport = {
+	width: "device-width",
+	initialScale: 1,
+	viewportFit: "cover",
+	themeColor: "#0a0a0a",
+};
+
 export const metadata: Metadata = {
 	title: "Shader Studio",
-	description: "Copy, tweak, export.",
+	description: "Browser-based fragment shader studio by Durwood Studios",
+	manifest: "/manifest.json",
+	icons: { icon: "/icon.svg" },
+	applicationName: "Shader Studio",
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "black-translucent",
+		title: "Shader Studio",
+	},
 };
 
 // Force dynamic rendering so middleware.ts's per-request nonce gets stamped

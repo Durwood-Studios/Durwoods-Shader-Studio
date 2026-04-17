@@ -28,6 +28,12 @@ jobs:
       - name: Lint
         run: pnpm biome check .
 
+      - name: ESLint (Next.js rules)
+        run: pnpm lint:next
+
+      - name: Audit
+        run: npm audit --audit-level=moderate
+
       - name: Typecheck
         run: pnpm tsc --noEmit
 

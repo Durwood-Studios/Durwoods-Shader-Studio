@@ -5,9 +5,40 @@ body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	/* Prevents content from shifting under iOS address bar */
+	overflow: hidden;
 }
 
 #__next,
 body > div:first-child {
 	height: 100%;
+}
+
+/* Safe-area custom properties — consumed by StudioShell header/footer */
+:root {
+	--sat: env(safe-area-inset-top, 0px);
+	--sar: env(safe-area-inset-right, 0px);
+	--sab: env(safe-area-inset-bottom, 0px);
+	--sal: env(safe-area-inset-left, 0px);
+}
+
+/* Smooth scrolling — honour reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+	:root {
+		scroll-behavior: smooth;
+	}
+}
+
+/* Drawer transition — used by slide-over panels in StudioShell */
+.drawer-enter {
+	transform: translateX(-100%);
+}
+.drawer-enter-done {
+	transform: translateX(0);
+}
+.drawer-exit {
+	transform: translateX(0);
+}
+.drawer-exit-done {
+	transform: translateX(-100%);
 }

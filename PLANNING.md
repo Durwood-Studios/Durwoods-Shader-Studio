@@ -11,11 +11,13 @@ A browser-based shader studio where you can fork, tweak, and export fragment sha
 One sentence to ship: **"Copy, tweak, export. Any WebGL hero effect, sub-5 KB gzipped."**
 
 Three things that must be true at every checkpoint:
+
 1. **It feels instant.** 60 fps on a 2022 MacBook. Slider drag latency under 16 ms. Time-to-first-render under 1.5 s on a cold 4G connection.
 2. **Exports are tiny.** Sub-5 KB gzipped for a standard component. Raw WebGL 1 + React, zero runtime deps beyond React itself.
 3. **It's safe to use.** User-authored GLSL runs in a Web Worker sandbox with a watchdog. The app itself never phones home with user code.
 
 Non-goals — say no even when tempting:
+
 - User accounts, auth, databases. All state is URL-encoded or localStorage.
 - npm package publication, custom domain, marketing site. The Vercel hobby URL IS the product.
 - 3D mesh loading, glTF, scene graphs. Fragment shaders only.
@@ -40,22 +42,22 @@ Below the canvas: an Export drawer with three tabs — **Component** (ready-to-p
 
 Every choice below has a reason. If you want to change one, update this doc first.
 
-| Layer | Pick | Why |
-|---|---|---|
-| Framework | **Next.js 15.x App Router, TypeScript strict** | Already known stack from Turblu. |
-| Build tool | **Webpack (Next 15 default, not Turbopack)** | Turbopack still has WebGL source-map edge cases. |
-| Runtime | **Node 22 LTS** | Current LTS. |
-| UI primitives | **shadcn/ui + Tailwind v4** | Copy-paste, owned code, zero vendor lock. |
-| Code editor | **`@monaco-editor/react`** | Industry-standard GLSL editing. Lazy-loaded only when Code tab opens. |
-| Rendering | **Raw WebGL 1, no three.js, no R3F, no OGL** | Non-negotiable. Export weight moat. |
-| State (app) | **Zustand** with `persist` → localStorage | No provider trees. Canvas state in refs, never triggers re-renders. |
-| State (URL) | **Custom URL codec** (binary-packed base64) | Shared URLs stay under 400 chars. |
-| Validation | **Zod** for uniform manifests | Every uniform's range is a schema, auto-generates slider config. |
-| Icons | **Lucide React** | Tree-shaken, matches your brand elsewhere. |
-| Package manager | **pnpm** | Fast, strict, disk-efficient. |
-| Linter | **Biome** | 30x faster than ESLint, single config. |
-| Pre-commit | **Husky + lint-staged** | `tsc --noEmit` + `biome check` before every commit. |
-| Hosting | **Vercel (free hobby tier)** | No domain, use the default `*.vercel.app` URL. |
+| Layer           | Pick                                           | Why                                                                   |
+| --------------- | ---------------------------------------------- | --------------------------------------------------------------------- |
+| Framework       | **Next.js 15.x App Router, TypeScript strict** | Already known stack from Turblu.                                      |
+| Build tool      | **Webpack (Next 15 default, not Turbopack)**   | Turbopack still has WebGL source-map edge cases.                      |
+| Runtime         | **Node 22 LTS**                                | Current LTS.                                                          |
+| UI primitives   | **shadcn/ui + Tailwind v4**                    | Copy-paste, owned code, zero vendor lock.                             |
+| Code editor     | **`@monaco-editor/react`**                     | Industry-standard GLSL editing. Lazy-loaded only when Code tab opens. |
+| Rendering       | **Raw WebGL 1, no three.js, no R3F, no OGL**   | Non-negotiable. Export weight moat.                                   |
+| State (app)     | **Zustand** with `persist` → localStorage      | No provider trees. Canvas state in refs, never triggers re-renders.   |
+| State (URL)     | **Custom URL codec** (binary-packed base64)    | Shared URLs stay under 400 chars.                                     |
+| Validation      | **Zod** for uniform manifests                  | Every uniform's range is a schema, auto-generates slider config.      |
+| Icons           | **Lucide React**                               | Tree-shaken, matches your brand elsewhere.                            |
+| Package manager | **pnpm**                                       | Fast, strict, disk-efficient.                                         |
+| Linter          | **Biome**                                      | 30x faster than ESLint, single config.                                |
+| Pre-commit      | **Husky + lint-staged**                        | `tsc --noEmit` + `biome check` before every commit.                   |
+| Hosting         | **Vercel (free hobby tier)**                   | No domain, use the default `*.vercel.app` URL.                        |
 
 ---
 
@@ -132,6 +134,7 @@ Target: **under 400 chars per shader** so URLs survive Twitter, Slack, Discord t
 Every shader in `shaders/<name>/` has two committed files:
 
 **`shader.frag`** — GLSL source with annotation comments:
+
 ```glsl
 // @uniform ior: float, range: [1.0, 2.0], default: 1.48, label: "IOR", group: "Glass"
 uniform float uIOR;
@@ -140,6 +143,7 @@ uniform float uIOR;
 **`README.md`** — authoring notes, visual reference image, performance notes.
 
 A build step (`pnpm gen:manifests`) parses the annotations and generates:
+
 - `manifest.json` (single source of truth for controls UI, URL packing)
 - TypeScript types for the config object
 - The entry in the shader library
@@ -209,6 +213,7 @@ These are acceptance criteria. A PR that regresses any of them is not merged.
 - **60 fps sustained** on M1 MacBook Air; ≥ 45 fps on iPhone 12
 
 Enforcement:
+
 - **`size-limit`** in CI on the export runtime
 - **Lighthouse CI** on every PR, blocks on regression
 
@@ -227,6 +232,7 @@ Enforcement:
 ## 7. Roadmap
 
 ### v0.1 — "Hello, orb" (Week 1)
+
 - Next.js 15 app scaffolded, Vercel deployed at `shader-studio-<handle>.vercel.app`
 - `lib/runtime/` working (~1 KB WebGL runtime)
 - One shader: `glass-orb` (port from the playground we already built)
@@ -235,6 +241,7 @@ Enforcement:
 - CI green: lint, typecheck, build, size-limit
 
 ### v0.2 — "The Code tab" (Week 2)
+
 - Monaco editor integrated, lazy-loaded
 - Hot-reload on GLSL edit
 - Web Worker sandbox for user GLSL with watchdog
@@ -242,12 +249,14 @@ Enforcement:
 - Three more built-in shaders: liquid-chrome, mesh-gradient, metaballs
 
 ### v0.3 — "Share + Export" (Week 3)
+
 - Shareable URL flow
 - Export drawer: Component (TSX), Config (JSON), Embed (iframe snippet)
 - "Copy as download" option
 - `prefers-reduced-motion` audit
 
 ### v0.4 — "Polish" (Week 4)
+
 - Performance audit against §5 budgets
 - Accessibility audit (axe-core clean)
 - Two more shaders: iridescent-ribbons, ferro-fluid

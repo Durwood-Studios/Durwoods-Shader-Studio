@@ -7,5 +7,14 @@ npx lint-staged
 echo "→ typecheck (tsc --noEmit)"
 npx tsc --noEmit
 
-echo "→ lint (biome check)"
+echo "→ biome check (repo-wide lint)"
 npx @biomejs/biome check .
+
+echo "→ eslint (Next.js rules)"
+npx eslint . --max-warnings=0
+
+echo "→ npm audit (moderate+ blocks)"
+npm audit --audit-level=moderate || {
+  echo "⚠ audit found vulnerabilities — review manually, commit abort"
+  exit 1
+}

@@ -21,9 +21,7 @@ export function middleware(request: NextRequest) {
 		? `'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval'`
 		: `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval'`;
 
-	const connectSrc = isDev
-		? "'self' ws: wss: http://localhost:* http://127.0.0.1:*"
-		: "'self'";
+	const connectSrc = isDev ? "'self' ws: wss: http://localhost:* http://127.0.0.1:*" : "'self'";
 
 	const cspHeader = [
 		"default-src 'self'",

@@ -61,7 +61,9 @@ export function ControlsPanel({ manifest }: ControlsPanelProps) {
 
 			<button
 				type="button"
-				onClick={resetUniforms}
+				onClick={() =>
+					resetUniforms(Object.fromEntries(manifest.uniforms.map((u) => [u.name, u.default])))
+				}
 				className={[
 					"mt-1 rounded-md border border-neutral-700 px-3 py-1.5 text-xs text-neutral-400",
 					"hover:border-neutral-500 hover:text-neutral-200 transition-colors",

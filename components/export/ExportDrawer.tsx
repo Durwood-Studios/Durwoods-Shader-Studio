@@ -76,7 +76,8 @@ function toPascalCase(id: string): string {
 }
 
 function buildEmbedURL(shareId: string | undefined, manifest: ShaderManifest): string {
-	const base = "https://shader-studio.vercel.app/s/";
+	const origin = typeof window !== "undefined" ? window.location.origin : "";
+	const base = `${origin}/s/`;
 	const id = shareId ?? manifest.id;
 	return `${base}${id}`;
 }
