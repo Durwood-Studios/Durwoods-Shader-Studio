@@ -115,15 +115,22 @@ function CodeBlock({ code, label }: CodeBlockProps) {
 	}, [code]);
 
 	return (
-		<div className="flex flex-col gap-2">
-			<div className="flex items-center justify-between">
-				<span className="text-xs text-neutral-500">{label}</span>
-				<Button variant="outline" size="sm" onClick={handleCopy}>
+		<div className="flex flex-col gap-2 min-w-0">
+			<div className="flex items-center justify-between gap-2 min-w-0">
+				<span className="text-xs text-neutral-500 truncate min-w-0">{label}</span>
+				{/* Copy button: min-h-[44px] meets tap target */}
+				<Button variant="outline" size="sm" onClick={handleCopy} className="shrink-0">
 					Copy
 				</Button>
 			</div>
-			<pre className="overflow-auto rounded-md bg-neutral-900 p-3 text-xs text-neutral-300 border border-neutral-800 max-h-48">
-				<code>{code}</code>
+			{/*
+			  overflow-x-auto: long lines scroll horizontally inside the block.
+			  word-break: break-word: very long tokens (e.g. base64 strings) wrap
+			  rather than pushing the block wider than the viewport.
+			  max-h-48 keeps the block from dominating the drawer.
+			*/}
+			<pre className="overflow-x-auto rounded-md bg-neutral-900 p-3 text-xs text-neutral-300 border border-neutral-800 max-h-48 min-w-0">
+				<code style={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }}>{code}</code>
 			</pre>
 		</div>
 	);
@@ -149,10 +156,11 @@ export function ExportDrawer({ manifest, fragSrc, shareId: _shareId }: ExportDra
 	const aiPrompt = buildAIPrompt(manifest, fragSrc, uniforms);
 
 	return (
-		<div className="border-t border-neutral-800 bg-neutral-950 p-4">
+		<div className="border-t border-neutral-800 bg-neutral-950 p-4 min-w-0 overflow-hidden">
 			<h2 className="mb-3 text-sm font-semibold text-neutral-200">Export</h2>
 			<Tabs defaultTab="component">
-				<TabList className="mb-3">
+				{/* Tab row is scrollable so it never overflows at 320px */}
+				<TabList className="mb-3 overflow-x-auto scrollbar-none">
 					<TabTrigger id="component">Component TSX</TabTrigger>
 					<TabTrigger id="config">Config JSON</TabTrigger>
 					<TabTrigger id="ai-prompt">AI Prompt</TabTrigger>

@@ -202,6 +202,18 @@ export function CodeEditor() {
 
 	return (
 		<div className="flex flex-col h-full bg-[#1e1e1e]">
+			{/*
+			  Mobile banner — Monaco is effectively unusable on touch screens.
+			  Shown only on <md viewports (hidden on md+).
+			  This block does NOT prevent the editor from rendering — it just warns.
+			*/}
+			<div className="md:hidden shrink-0 bg-amber-950/80 border-b border-amber-800 px-3 py-2">
+				<p className="text-xs text-amber-300 leading-snug">
+					<span className="font-semibold">Code editing works best on desktop</span> — switch to a
+					larger screen to edit GLSL.
+				</p>
+			</div>
+
 			{/* ── Toolbar ── */}
 			<div className="flex items-center gap-2 px-3 py-1.5 border-b border-neutral-800 shrink-0">
 				<button
@@ -210,7 +222,9 @@ export function CodeEditor() {
 					disabled={!isModified}
 					className={[
 						"px-2 py-0.5 rounded text-xs font-medium transition-colors",
+						"min-h-[36px]",
 						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+						"[-webkit-tap-highlight-color:transparent]",
 						isModified
 							? "bg-neutral-700 text-neutral-200 hover:bg-neutral-600"
 							: "bg-transparent text-neutral-600 cursor-not-allowed",
@@ -237,7 +251,7 @@ export function CodeEditor() {
 			</div>
 
 			{/* ── Monaco Editor ── */}
-			<div className="flex-1 min-h-0">
+			<div className="flex-1 min-h-0 overflow-hidden">
 				<MonacoEditorComponent
 					key={activeShaderId}
 					defaultLanguage="glsl"

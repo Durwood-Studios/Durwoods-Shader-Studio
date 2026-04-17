@@ -120,8 +120,10 @@ export function LibraryRail({ compact = false, onSelect }: LibraryRailProps) {
 							aria-label={manifest.label}
 							aria-current={isActive ? "true" : undefined}
 							className={[
+								// h-11/w-11 = 44px — meets tap target on coarse pointer devices
 								"flex h-11 w-11 items-center justify-center rounded-md text-xs font-bold transition-colors",
 								"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+								"[-webkit-tap-highlight-color:transparent]",
 								isActive
 									? "bg-violet-600/30 text-violet-300"
 									: "text-neutral-500 hover:bg-neutral-800 hover:text-neutral-200",
@@ -137,7 +139,7 @@ export function LibraryRail({ compact = false, onSelect }: LibraryRailProps) {
 
 	// ── Full mode ─────────────────────────────────────────────────────────────
 	return (
-		<nav aria-label="Shader library" className="flex flex-col overflow-y-auto">
+		<nav aria-label="Shader library" className="flex flex-col overflow-y-auto min-w-0">
 			{/* Search box */}
 			<div className="mb-3 px-3 pt-3">
 				<input
@@ -145,14 +147,17 @@ export function LibraryRail({ compact = false, onSelect }: LibraryRailProps) {
 					placeholder="Search shaders…"
 					value={query}
 					onChange={(e) => setQuery(e.target.value)}
-					className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm text-neutral-200 placeholder:text-neutral-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+					// inputMode + enterKeyHint improve mobile keyboard UX
+					inputMode="search"
+					enterKeyHint="search"
+					className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 min-h-[44px]"
 					aria-label="Search shader library"
 				/>
 			</div>
 
 			{/* Empty state */}
 			{groupedFiltered.length === 0 && (
-				<p className="px-5 py-4 text-xs text-neutral-500">No shaders match "{query}"</p>
+				<p className="px-5 py-4 text-xs text-neutral-500">No shaders match &ldquo;{query}&rdquo;</p>
 			)}
 
 			{/* Category sections */}
@@ -165,7 +170,7 @@ export function LibraryRail({ compact = false, onSelect }: LibraryRailProps) {
 							type="button"
 							onClick={() => toggleCategory(cat)}
 							aria-expanded={!isCollapsed}
-							className="flex w-full items-center gap-1.5 px-3 py-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500"
+							className="flex w-full min-h-[44px] items-center gap-1.5 px-3 py-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 [-webkit-tap-highlight-color:transparent]"
 						>
 							<span
 								className={[
@@ -204,7 +209,10 @@ export function LibraryRail({ compact = false, onSelect }: LibraryRailProps) {
 												aria-current={isActive ? "true" : undefined}
 												className={[
 													"w-full rounded-md px-3 py-2.5 text-left transition-colors",
+													// min-h ensures 44px even when tile has little content
+													"min-h-[44px]",
 													"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+													"[-webkit-tap-highlight-color:transparent]",
 													isActive
 														? "bg-violet-600/20 text-violet-300"
 														: "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200",
@@ -224,9 +232,9 @@ export function LibraryRail({ compact = false, onSelect }: LibraryRailProps) {
 													</span>
 												)}
 
-												{/* Tag pills */}
+												{/* Tag pills — flex-wrap prevents horizontal scroll */}
 												{tags.length > 0 && (
-													<span className="mt-1.5 flex flex-wrap gap-1">
+													<span className="mt-1.5 flex flex-wrap gap-1 overflow-hidden">
 														{visibleTags.map((tag) => (
 															<span
 																key={tag}

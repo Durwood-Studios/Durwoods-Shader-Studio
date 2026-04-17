@@ -112,11 +112,31 @@ export function TextOverlay() {
 	return (
 		<div
 			aria-hidden
-			className={`pointer-events-none absolute inset-0 z-20 flex flex-col justify-center px-6 sm:px-12 ${alignment} ${textColor}`}
+			/*
+			  px-4 on smallest screens (320px) keeps text from touching the edges.
+			  sm:px-8 / md:px-12 adds breathing room on wider viewports.
+			  pointer-events-none so the overlay never intercepts canvas interaction.
+			  overflow-hidden prevents long unbreakable text from causing horizontal scroll.
+			*/
+			className={[
+				"pointer-events-none absolute inset-0 z-20 flex flex-col justify-center",
+				"overflow-hidden",
+				"px-4 sm:px-8 md:px-12",
+				alignment,
+				textColor,
+			].join(" ")}
 		>
 			<h1
 				ref={headlineRef}
-				className="max-w-4xl text-[clamp(2rem,6vw,5rem)] font-bold leading-[1.05] tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.5)]"
+				/*
+				  clamp(2rem, 6vw, 5rem):
+				  - At 320px: 2rem = 32px — readable, fits without overflow.
+				  - At 768px: 6vw = 46px — comfortable tablet size.
+				  - At 1440px+: capped at 5rem = 80px — bold desktop hero.
+				  max-w-4xl + overflow-wrap prevent long headlines from overflowing.
+				*/
+				className="max-w-4xl font-bold leading-[1.05] tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.5)] break-words"
+				style={{ fontSize: "clamp(2rem, 6vw, 5rem)" }}
 			>
 				{words.map((w, i) => (
 					<span
@@ -131,7 +151,14 @@ export function TextOverlay() {
 			</h1>
 			<p
 				ref={subtitleRef}
-				className="mt-4 max-w-2xl text-[clamp(0.95rem,1.5vw,1.25rem)] leading-relaxed text-current/90 drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]"
+				/*
+				  clamp(0.875rem, 1.5vw, 1.25rem):
+				  - At 320px: 0.875rem = 14px — slightly above minimum readable.
+				  - At 768px: 1.5vw ≈ 11.5px — clamp floor kicks in, stays at 14px.
+				  - At 1024px+: scales up to 20px cap.
+				*/
+				className="mt-3 max-w-2xl leading-relaxed text-current/90 drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)] break-words sm:mt-4"
+				style={{ fontSize: "clamp(0.875rem, 1.5vw, 1.25rem)" }}
 			>
 				{subWords.map((w, i) => (
 					<span

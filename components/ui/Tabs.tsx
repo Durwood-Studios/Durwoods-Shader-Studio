@@ -37,7 +37,17 @@ interface TabListProps {
 
 export function TabList({ children, className = "" }: TabListProps) {
 	return (
-		<div role="tablist" className={["flex gap-1", className].join(" ")}>
+		<div
+			role="tablist"
+			className={[
+				"flex gap-1",
+				// Horizontally scrollable with momentum on iOS; hide scrollbar visually
+				"overflow-x-auto scrollbar-none",
+				// Contain momentum scroll within the tab list
+				"overscroll-x-contain",
+				className,
+			].join(" ")}
+		>
 			{children}
 		</div>
 	);
@@ -69,8 +79,12 @@ export function TabTrigger({ id, children }: TabTriggerProps) {
 			onClick={() => setActive(id)}
 			onKeyDown={handleKeyDown}
 			className={[
-				"rounded px-3 py-1.5 text-sm font-medium transition-colors",
+				// min-h-[44px] meets tap target; whitespace-nowrap prevents wrapping mid-label
+				"whitespace-nowrap rounded px-3 py-1.5 text-sm font-medium transition-colors",
+				"min-h-[44px] shrink-0",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+				// Suppress tap highlight
+				"[-webkit-tap-highlight-color:transparent]",
 				isActive ? "bg-neutral-800 text-neutral-100" : "text-neutral-400 hover:text-neutral-200",
 			].join(" ")}
 		>

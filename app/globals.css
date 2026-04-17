@@ -7,6 +7,8 @@ body {
 	padding: 0;
 	/* Prevents content from shifting under iOS address bar */
 	overflow: hidden;
+	/* Prevent iOS rubber-band scroll from causing layout shifts */
+	overscroll-behavior: none;
 }
 
 #__next,
@@ -48,4 +50,93 @@ body > div:first-child {
 }
 .drawer-exit-done {
 	transform: translateX(-100%);
+}
+
+/* ── Global overflow hygiene ────────────────────────────────────────────────── */
+
+/* Prevent any child from exceeding viewport width (iOS Safari scrollbar quirk) */
+* {
+	box-sizing: border-box;
+	max-width: 100vw;
+}
+
+/* Scrollable containers that must never cause horizontal overflow */
+.overflow-x-auto,
+[class*="overflow-x-auto"] {
+	-webkit-overflow-scrolling: touch;
+	scroll-behavior: smooth;
+}
+
+/* ── Touch affordances — applied globally ──────────────────────────────────── */
+
+/* Suppress the blue tap highlight on all interactive elements;
+   we use custom focus-visible rings instead. */
+a,
+button,
+[role="button"],
+[role="tab"],
+[role="radio"],
+[role="checkbox"],
+input,
+select,
+textarea,
+label {
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent accidental text selection on long-press for interactive controls */
+button,
+[role="button"],
+[role="tab"],
+[role="radio"],
+.select-none {
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+/* ── Coarse-pointer (touch device) hit-area boost ──────────────────────────── */
+/* Touch devices (phones, tablets, even stylus-equipped devices where pointer
+   is still coarse) get minimum 44×44px hit areas on all interactive elements,
+   even when the visual size is smaller. We use min-height/min-width rather than
+   padding so we don't break visual layouts. */
+@media (pointer: coarse) {
+	button,
+	[role="button"],
+	[role="tab"],
+	input[type="checkbox"],
+	input[type="radio"] {
+		min-height: 44px;
+		min-width: 44px;
+	}
+
+	/* Slider thumbs get a bigger tap area via the padding trick */
+	input[type="range"]::-webkit-slider-thumb {
+		width: 28px;
+		height: 28px;
+	}
+	input[type="range"]::-moz-range-thumb {
+		width: 28px;
+		height: 28px;
+	}
+
+	/* Preset chip / group-tab buttons can be narrower visually but still meet 44px height */
+	.preset-chip,
+	.group-tab-btn {
+		min-height: 44px;
+	}
+}
+
+/* ── Scrollbar utilities (momentum scroll on iOS) ───────────────────────────── */
+.scroll-momentum {
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+}
+
+/* Hide scrollbar visually but preserve scroll (used on group tab row) */
+.scrollbar-none {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+	display: none;
 }

@@ -18,8 +18,9 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-	sm: "px-2.5 py-1 text-xs",
-	md: "px-3.5 py-1.5 text-sm",
+	// min-h-[44px] ensures the tap target meets the 44px minimum on all devices
+	sm: "px-2.5 py-1 text-xs min-h-[44px]",
+	md: "px-3.5 py-1.5 text-sm min-h-[44px]",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -30,9 +31,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 		<button
 			ref={ref}
 			className={[
-				"inline-flex items-center gap-1.5 rounded-md font-medium transition-colors",
+				"inline-flex items-center justify-center gap-1.5 rounded-md font-medium transition-colors",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950",
 				"disabled:pointer-events-none disabled:opacity-40",
+				// Suppress tap highlight — we use custom focus rings
+				"[-webkit-tap-highlight-color:transparent]",
 				variantClasses[variant],
 				sizeClasses[size],
 				className,

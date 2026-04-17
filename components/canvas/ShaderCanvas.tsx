@@ -276,11 +276,13 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 				role="img"
 			/>
 
-			{/* ── Shader compile error overlay ── */}
+			{/* ── Shader compile error overlay ──
+			    max-h: 40vh on mobile so it never dominates the canvas;
+			    1/2 (50vh) on larger screens for more detail. */}
 			{error && (
 				<div
 					role="alert"
-					className="pointer-events-auto absolute inset-x-0 bottom-0 max-h-1/2 overflow-auto border-t border-red-900 bg-red-950/90 p-3 font-mono text-xs text-red-200 backdrop-blur"
+					className="pointer-events-auto absolute inset-x-0 bottom-0 max-h-[40vh] overflow-auto border-t border-red-900 bg-red-950/90 p-3 font-mono text-xs text-red-200 backdrop-blur md:max-h-[50vh]"
 				>
 					<div className="mb-1 text-xs font-semibold uppercase tracking-wider text-red-300">
 						Shader error
@@ -289,7 +291,8 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 				</div>
 			)}
 
-			{/* ── FPS / ms counter — imperative update, no re-render per frame ── */}
+			{/* ── FPS / ms counter — imperative update, no re-render per frame ──
+			    top-2 left-2 positions it clear of any button in the header. */}
 			{perfHud && (
 				<div
 					ref={fpsHudRef}

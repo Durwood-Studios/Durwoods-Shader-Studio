@@ -59,7 +59,7 @@ export function NumberScrub({
 	const handlePointerDown = useCallback(
 		(e: React.PointerEvent<HTMLDivElement>) => {
 			if (editing) return;
-			// Only primary button
+			// Only primary button / first touch
 			if (e.button !== 0) return;
 			e.preventDefault();
 			(e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
@@ -236,12 +236,24 @@ export function NumberScrub({
 						"rounded bg-neutral-800 px-1.5 py-0.5",
 						"border border-neutral-700 text-xs text-neutral-200",
 						"cursor-ew-resize",
+						// min-h-[40px] gives a generous touch target without changing visual width
+						"min-h-[40px]",
 						// Focus ring matching the rest of the UI
 						"focus:outline-none focus-visible:ring-1 focus-visible:ring-violet-500",
 						// High-contrast mode focus
 						"forced-colors:focus-visible:outline forced-colors:focus-visible:outline-2",
+						// Suppress tap highlight
+						"[-webkit-tap-highlight-color:transparent]",
 					].join(" ")}
-					style={{ touchAction: "none" }}
+					style={{
+						/*
+						  touch-action: none on the scrub widget itself.
+						  This ensures horizontal drags are captured as value-scrub gestures
+						  rather than intercepted by the browser as scroll. The parent slider
+						  row has pan-y, so vertical swipes still scroll the panel.
+						*/
+						touchAction: "none",
+					}}
 				>
 					{/* ±arrow hint on hover */}
 					{hovered && (
@@ -264,6 +276,7 @@ export function NumberScrub({
 					id={id}
 					type="text"
 					inputMode="decimal"
+					enterKeyHint="done"
 					value={editText}
 					onChange={(e) => setEditText(e.target.value)}
 					onBlur={commitEdit}

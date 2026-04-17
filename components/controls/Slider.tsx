@@ -52,9 +52,15 @@ export function Slider({
 	);
 
 	return (
-		<div className="flex flex-col gap-1">
+		/*
+		  Slider row layout:
+		  - touch-action: pan-y on the wrapper so vertical swipes scroll the panel
+		    (the NumberScrub overrides this to `none` on itself for horizontal scrub).
+		  - min-h ensures the row meets 40px minimum height even with short labels.
+		*/
+		<div className="flex flex-col gap-1 min-w-0" style={{ touchAction: "pan-y" }}>
 			{/* Label row */}
-			<div className="flex items-center justify-between gap-2">
+			<div className="flex items-center justify-between gap-2 min-w-0">
 				<label
 					htmlFor={id}
 					className="min-w-0 flex-1 select-none truncate text-xs font-medium text-neutral-400"
@@ -62,7 +68,7 @@ export function Slider({
 					{label}
 				</label>
 
-				{/* Scrub-capable number display */}
+				{/* Scrub-capable number display — touch-action: none applied inside NumberScrub */}
 				<NumberScrub
 					label={label}
 					min={min}
@@ -75,8 +81,13 @@ export function Slider({
 				/>
 			</div>
 
-			{/* Range track — py-2.5 enlarges the hit area to ≥44 px without inflating the visible track */}
-			<div className="py-2.5">
+			{/*
+			  Range track — py-2.5 enlarges the hit area to ≥40 px without inflating
+			  the visible track. touch-action: none on the track so the native range
+			  input owns horizontal drag (hold + slide on mobile); pan-x would hand
+			  the gesture to the browser as a page pan, breaking the slider.
+			*/}
+			<div className="py-2.5" style={{ touchAction: "none" }}>
 				<input
 					id={id}
 					type="range"
@@ -90,17 +101,22 @@ export function Slider({
 					aria-valuemin={min}
 					aria-valuemax={max}
 					aria-valuenow={value}
+					style={{
+						touchAction: "none",
+						// Gradient track fill: filled portion is violet, remainder is neutral-700
+						background: `linear-gradient(to right, rgb(139 92 246) 0%, rgb(139 92 246) ${pct}%, rgb(64 64 64) ${pct}%, rgb(64 64 64) 100%)`,
+					}}
 					className={[
 						"h-1.5 w-full cursor-pointer appearance-none rounded-full",
 						// Track fill: gradient from violet to neutral, breakpoint at current value
 						"[&::-webkit-slider-runnable-track]:rounded-full",
-						// Thumb
-						"[&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5",
+						// Thumb — 24px on desktop; coarse-pointer override in globals.css bumps to 28px
+						"[&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6",
 						"[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full",
 						"[&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:cursor-pointer",
 						"[&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:duration-75",
 						// Firefox
-						"[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5",
+						"[&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6",
 						"[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0",
 						"[&::-moz-range-thumb]:bg-violet-500 [&::-moz-range-thumb]:cursor-pointer",
 						"[&::-moz-range-track]:rounded-full [&::-moz-range-track]:h-1.5",
@@ -108,10 +124,6 @@ export function Slider({
 						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
 						"focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900",
 					].join(" ")}
-					style={{
-						// Gradient track fill: filled portion is violet, remainder is neutral-700
-						background: `linear-gradient(to right, rgb(139 92 246) 0%, rgb(139 92 246) ${pct}%, rgb(64 64 64) ${pct}%, rgb(64 64 64) 100%)`,
-					}}
 				/>
 			</div>
 		</div>
