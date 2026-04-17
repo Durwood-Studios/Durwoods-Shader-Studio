@@ -18,12 +18,19 @@ export interface UniformDef {
 	storage: StoragePrecision;
 }
 
+export interface Preset {
+	name: string;
+	description?: string;
+	uniforms: Record<string, number | number[]>;
+}
+
 export interface ShaderManifest {
 	id: string;
 	version: number;
 	label: string;
 	description?: string;
 	uniforms: UniformDef[];
+	presets?: Preset[];
 }
 
 export interface RegistryEntry {
@@ -33,11 +40,35 @@ export interface RegistryEntry {
 
 import glassOrbFrag from "@/shaders/glass-orb/frag";
 import glassOrbManifest from "@/shaders/glass-orb/manifest.json";
+import gyroidFrag from "@/shaders/gyroid/frag";
+import gyroidManifest from "@/shaders/gyroid/manifest.json";
+import julia3dFrag from "@/shaders/julia-3d/frag";
+import julia3dManifest from "@/shaders/julia-3d/manifest.json";
+import mandelbulbFrag from "@/shaders/mandelbulb/frag";
+import mandelbulbManifest from "@/shaders/mandelbulb/manifest.json";
+import strangeAttractorFrag from "@/shaders/strange-attractor/frag";
+import strangeAttractorManifest from "@/shaders/strange-attractor/manifest.json";
 
 export const SHADER_REGISTRY: RegistryEntry[] = [
 	{
-		manifest: glassOrbManifest as ShaderManifest,
+		manifest: glassOrbManifest as unknown as ShaderManifest,
 		fragSrc: glassOrbFrag,
+	},
+	{
+		manifest: mandelbulbManifest as ShaderManifest,
+		fragSrc: mandelbulbFrag,
+	},
+	{
+		manifest: gyroidManifest as ShaderManifest,
+		fragSrc: gyroidFrag,
+	},
+	{
+		manifest: strangeAttractorManifest as ShaderManifest,
+		fragSrc: strangeAttractorFrag,
+	},
+	{
+		manifest: julia3dManifest as ShaderManifest,
+		fragSrc: julia3dFrag,
 	},
 ];
 

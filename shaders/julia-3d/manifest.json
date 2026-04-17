@@ -1,0 +1,89 @@
+{
+	"id": "julia-3d",
+	"version": 1,
+	"label": "Julia 3D",
+	"description": "Raymarched quaternion Julia set with orbit-trap coloring, Fresnel refraction, and animated camera orbit.",
+	"uniforms": [
+		{
+			"name": "uCx",
+			"type": "float",
+			"range": [-1.0, 1.0],
+			"default": 0.4,
+			"label": "C.x",
+			"group": "Quaternion",
+			"storage": "uint8"
+		},
+		{
+			"name": "uCy",
+			"type": "float",
+			"range": [-1.0, 1.0],
+			"default": -0.2,
+			"label": "C.y",
+			"group": "Quaternion",
+			"storage": "uint8"
+		},
+		{
+			"name": "uCz",
+			"type": "float",
+			"range": [-1.0, 1.0],
+			"default": 0.1,
+			"label": "C.z",
+			"group": "Quaternion",
+			"storage": "uint8"
+		},
+		{
+			"name": "uCw",
+			"type": "float",
+			"range": [-1.0, 1.0],
+			"default": -0.3,
+			"label": "C.w",
+			"group": "Quaternion",
+			"storage": "uint8"
+		},
+		{
+			"name": "uIterations",
+			"type": "float",
+			"range": [2.0, 12.0],
+			"default": 8.0,
+			"label": "Iterations",
+			"group": "Quaternion",
+			"storage": "uint8"
+		},
+		{
+			"name": "uColorShift",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.0,
+			"label": "Color Shift",
+			"group": "Material",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvHue",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.58,
+			"label": "Env Hue",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvBright",
+			"type": "float",
+			"range": [0.3, 2.0],
+			"default": 1.0,
+			"label": "Env Bright",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uFloorMix",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.35,
+			"label": "Floor Mix",
+			"group": "Environment",
+			"storage": "uint8"
+		}
+	]
+}

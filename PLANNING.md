@@ -32,9 +32,11 @@ A single Next.js 15 app deployed to `shader-studio-<handle>.vercel.app` with a t
 
 - **Left rail:** shader library. Built-in shaders (glass-orb, liquid-chrome, mesh-gradient, metaballs, iridescent-ribbons) and anything forked locally.
 - **Center:** the live canvas. Full-bleed, DPR-capped at 2, IntersectionObserver pausing when off-screen.
-- **Right rail:** two tabs. **Controls** (auto-generated sliders) and **Code** (Monaco GLSL editor). Slider changes update uniforms at 60 fps; code edits hot-reload the canvas sub-100 ms.
+- **Right rail:** two tabs. **Controls** (auto-generated sliders with preset chips + group tabs) and **Code** (Monaco GLSL editor). Slider changes update uniforms at 60 fps; code edits hot-reload the canvas sub-100 ms.
 
-Below the canvas: an Export drawer with three tabs — **Component** (ready-to-paste React TSX), **Config** (JSON), **Embed** (iframe snippet that points back to a shareable URL). A "Share" button copies a URL that encodes the full state.
+Controls panel layout (top to bottom): preset chips (one per named preset in the shader manifest), group tabs (one per uniform group), sliders for the active group, reset button. Each shader's `manifest.json` may include a `presets` array of named uniform snapshots — clicking a chip applies all its values to the store at once.
+
+Below the canvas: an Export drawer with three tabs — **Component** (ready-to-paste React TSX), **Config** (JSON), **AI Prompt** (a filled-in prompt for Claude Code or similar, scoped to the current shader + uniform values). A "Share" button copies a URL that encodes the full state.
 
 ---
 

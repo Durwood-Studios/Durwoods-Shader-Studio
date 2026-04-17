@@ -75,11 +75,33 @@ function toPascalCase(id: string): string {
 		.join("");
 }
 
-function buildEmbedURL(shareId: string | undefined, manifest: ShaderManifest): string {
-	const origin = typeof window !== "undefined" ? window.location.origin : "";
-	const base = `${origin}/s/`;
-	const id = shareId ?? manifest.id;
-	return `${base}${id}`;
+function buildAIPrompt(
+	manifest: ShaderManifest,
+	fragSrc: string,
+	uniforms: Record<string, number | number[]>,
+): string {
+	const uniformLines = Object.entries(uniforms)
+		.map(([k, v]) => `  ${k}: ${JSON.stringify(v)}`)
+		.join("\n");
+
+	return `You're helping customize a WebGL fragment shader from Shader Studio.
+
+SHADER: ${manifest.label} (id: ${manifest.id}, v${manifest.version})
+CURRENT UNIFORMS:
+${uniformLines}
+
+FULL GLSL:
+\`\`\`glsl
+${fragSrc}
+\`\`\`
+
+GOAL: [describe what you want to change]
+
+RULES:
+- Keep the runtime API (createRuntime from @/lib/runtime) unchanged.
+- Prefer additive changes; don't refactor working code.
+- Every uniform must have an @uniform annotation comment.
+- WebGL 1 only (no \`texture()\`, no \`in\`/\`out\`, no multiple render targets).`;
 }
 
 interface CodeBlockProps {
@@ -107,7 +129,7 @@ function CodeBlock({ code, label }: CodeBlockProps) {
 	);
 }
 
-export function ExportDrawer({ manifest, fragSrc, shareId }: ExportDrawerProps) {
+export function ExportDrawer({ manifest, fragSrc, shareId: _shareId }: ExportDrawerProps) {
 	const uniforms = useStore((s) => s.uniforms);
 
 	const componentTSX = buildComponentTSX(manifest, fragSrc, uniforms);
@@ -124,8 +146,7 @@ export function ExportDrawer({ manifest, fragSrc, shareId }: ExportDrawerProps) 
 		2,
 	);
 
-	const embedURL = buildEmbedURL(shareId, manifest);
-	const embedSnippet = `<iframe\n  src="${embedURL}"\n  width="600"\n  height="400"\n  style="border:none;border-radius:8px"\n  title="${manifest.label}"\n></iframe>`;
+	const aiPrompt = buildAIPrompt(manifest, fragSrc, uniforms);
 
 	return (
 		<div className="border-t border-neutral-800 bg-neutral-950 p-4">
@@ -134,7 +155,7 @@ export function ExportDrawer({ manifest, fragSrc, shareId }: ExportDrawerProps) 
 				<TabList className="mb-3">
 					<TabTrigger id="component">Component TSX</TabTrigger>
 					<TabTrigger id="config">Config JSON</TabTrigger>
-					<TabTrigger id="embed">Embed</TabTrigger>
+					<TabTrigger id="ai-prompt">AI Prompt</TabTrigger>
 				</TabList>
 				<TabPanel id="component">
 					<CodeBlock code={componentTSX} label="React component — paste into your project" />
@@ -142,12 +163,11 @@ export function ExportDrawer({ manifest, fragSrc, shareId }: ExportDrawerProps) 
 				<TabPanel id="config">
 					<CodeBlock code={configJSON} label="Current uniform values as JSON" />
 				</TabPanel>
-				<TabPanel id="embed">
-					<CodeBlock code={embedSnippet} label="iframe embed snippet" />
-					<p className="mt-2 text-xs text-neutral-600">
-						Note: Share URL requires the Share button to be clicked first to generate a valid
-						shareId.
-					</p>
+				<TabPanel id="ai-prompt">
+					<CodeBlock
+						code={aiPrompt}
+						label="Paste into Claude Code or similar to customize the shader"
+					/>
 				</TabPanel>
 			</Tabs>
 		</div>

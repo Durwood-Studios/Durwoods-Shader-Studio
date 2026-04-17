@@ -1,0 +1,80 @@
+{
+	"id": "mandelbulb",
+	"version": 1,
+	"label": "Mandelbulb",
+	"description": "Raymarched degree-N Mandelbulb 3D fractal with orbit-trap coloring, Fresnel shading, and animated camera orbit.",
+	"uniforms": [
+		{
+			"name": "uPower",
+			"type": "float",
+			"range": [2.0, 12.0],
+			"default": 8.0,
+			"label": "Power",
+			"group": "Fractal",
+			"storage": "uint8"
+		},
+		{
+			"name": "uIterations",
+			"type": "float",
+			"range": [2.0, 12.0],
+			"default": 6.0,
+			"label": "Iterations",
+			"group": "Fractal",
+			"storage": "uint8"
+		},
+		{
+			"name": "uBail",
+			"type": "float",
+			"range": [1.0, 8.0],
+			"default": 2.0,
+			"label": "Bailout",
+			"group": "Fractal",
+			"storage": "uint8"
+		},
+		{
+			"name": "uColorMix",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.5,
+			"label": "Color Mix",
+			"group": "Fractal",
+			"storage": "uint8"
+		},
+		{
+			"name": "uRotateY",
+			"type": "float",
+			"range": [0.0, 6.28],
+			"default": 0.0,
+			"label": "Rotate Y",
+			"group": "Fractal",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvHue",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.58,
+			"label": "Env Hue",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvBright",
+			"type": "float",
+			"range": [0.3, 2.0],
+			"default": 1.0,
+			"label": "Env Bright",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uFloorMix",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.35,
+			"label": "Floor Mix",
+			"group": "Environment",
+			"storage": "uint8"
+		}
+	]
+}

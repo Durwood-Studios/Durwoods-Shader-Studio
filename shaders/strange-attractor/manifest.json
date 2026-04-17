@@ -1,0 +1,80 @@
+{
+	"id": "strange-attractor",
+	"version": 1,
+	"label": "Strange Attractor",
+	"description": "Glowing parametric ribbon approximating the Aizawa strange attractor, with additive segment accumulation and rainbow coloring.",
+	"uniforms": [
+		{
+			"name": "uA",
+			"type": "float",
+			"range": [-2.0, 2.0],
+			"default": 0.95,
+			"label": "A Param",
+			"group": "Attractor",
+			"storage": "uint8"
+		},
+		{
+			"name": "uB",
+			"type": "float",
+			"range": [0.0, 2.0],
+			"default": 0.7,
+			"label": "B Param",
+			"group": "Attractor",
+			"storage": "uint8"
+		},
+		{
+			"name": "uC",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.6,
+			"label": "C Param",
+			"group": "Attractor",
+			"storage": "uint8"
+		},
+		{
+			"name": "uScale",
+			"type": "float",
+			"range": [0.3, 2.0],
+			"default": 1.0,
+			"label": "Scale",
+			"group": "Attractor",
+			"storage": "uint8"
+		},
+		{
+			"name": "uGlow",
+			"type": "float",
+			"range": [0.0, 2.0],
+			"default": 1.2,
+			"label": "Glow",
+			"group": "Material",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvHue",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.58,
+			"label": "Env Hue",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvBright",
+			"type": "float",
+			"range": [0.3, 2.0],
+			"default": 1.0,
+			"label": "Env Bright",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uFloorMix",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.35,
+			"label": "Floor Mix",
+			"group": "Environment",
+			"storage": "uint8"
+		}
+	]
+}

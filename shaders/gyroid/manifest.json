@@ -1,0 +1,71 @@
+{
+	"id": "gyroid",
+	"version": 1,
+	"label": "Gyroid",
+	"description": "Raymarched triply periodic minimal surface morphing between Gyroid and Schwarz-P with metallic-glass shading.",
+	"uniforms": [
+		{
+			"name": "uScale",
+			"type": "float",
+			"range": [1.0, 10.0],
+			"default": 4.0,
+			"label": "Scale",
+			"group": "Surface",
+			"storage": "uint8"
+		},
+		{
+			"name": "uThickness",
+			"type": "float",
+			"range": [0.01, 0.3],
+			"default": 0.05,
+			"label": "Thickness",
+			"group": "Surface",
+			"storage": "uint8"
+		},
+		{
+			"name": "uMorph",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.5,
+			"label": "Morph",
+			"group": "Surface",
+			"storage": "uint8"
+		},
+		{
+			"name": "uMetallic",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.7,
+			"label": "Metallic",
+			"group": "Material",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvHue",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.58,
+			"label": "Env Hue",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uEnvBright",
+			"type": "float",
+			"range": [0.3, 2.0],
+			"default": 1.0,
+			"label": "Env Bright",
+			"group": "Environment",
+			"storage": "uint8"
+		},
+		{
+			"name": "uFloorMix",
+			"type": "float",
+			"range": [0.0, 1.0],
+			"default": 0.35,
+			"label": "Floor Mix",
+			"group": "Environment",
+			"storage": "uint8"
+		}
+	]
+}

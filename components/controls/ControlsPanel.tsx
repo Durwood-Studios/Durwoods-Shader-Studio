@@ -2,7 +2,8 @@
 
 import type { ShaderManifest, UniformDef } from "@/lib/shader-registry";
 import { useStore } from "@/lib/store";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import { PresetSelector } from "./PresetSelector";
 import { Slider } from "./Slider";
 
 interface ControlsPanelProps {
@@ -14,40 +15,15 @@ function getUniformDefault(def: UniformDef): number {
 	return typeof d === "number" ? d : (d[0] ?? 0);
 }
 
-// ── Chevron icon (inline SVG, no extra dep) ────────────────────────────────
-function ChevronIcon({ expanded }: { expanded: boolean }) {
-	return (
-		<svg
-			width="10"
-			height="10"
-			viewBox="0 0 10 10"
-			fill="none"
-			aria-hidden="true"
-			className="shrink-0 text-neutral-500 transition-transform duration-200"
-			style={{ transform: expanded ? "rotate(0deg)" : "rotate(-90deg)" }}
-		>
-			<path
-				d="M2 3.5L5 6.5L8 3.5"
-				stroke="currentColor"
-				strokeWidth="1.5"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-			/>
-		</svg>
-	);
-}
-
 export function ControlsPanel({ manifest }: ControlsPanelProps) {
 	const uniforms = useStore((s) => s.uniforms);
 	const setUniform = useStore((s) => s.setUniform);
 	const resetUniforms = useStore((s) => s.resetUniforms);
 
-	// Group collapse state keyed by group name (all expanded by default)
-	const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+	// Derive unique group names in declaration order
+	const groupNames = Array.from(new Set(manifest.uniforms.map((def) => def.group)));
 
-	const toggleGroup = useCallback((group: string) => {
-		setCollapsed((prev) => ({ ...prev, [group]: !prev[group] }));
-	}, []);
+	const [activeGroup, setActiveGroup] = useState<string>(groupNames[0] ?? "");
 
 	// Group uniforms by their group label
 	const groups = manifest.uniforms.reduce<Record<string, UniformDef[]>>((acc, def) => {
@@ -63,75 +39,82 @@ export function ControlsPanel({ manifest }: ControlsPanelProps) {
 		return getUniformDefault(def);
 	}
 
+	const activeDefs = groups[activeGroup] ?? [];
+
 	return (
-		<div className="flex flex-col gap-5 p-4">
-			{Object.entries(groups).map(([group, defs]) => {
-				const isExpanded = !collapsed[group];
-				const headingId = `group-heading-${group.replace(/\s+/g, "-").toLowerCase()}`;
-				const regionId = `group-region-${group.replace(/\s+/g, "-").toLowerCase()}`;
+		<div className="flex flex-col gap-0">
+			{/* Presets section */}
+			{(manifest.presets?.length ?? 0) > 0 && manifest.presets && (
+				<PresetSelector presets={manifest.presets} />
+			)}
 
-				return (
-					<section key={group} aria-labelledby={headingId}>
-						{/* Clickable group header */}
-						<button
-							id={headingId}
-							type="button"
-							aria-expanded={isExpanded}
-							aria-controls={regionId}
-							onClick={() => toggleGroup(group)}
-							className={[
-								"mb-2.5 flex w-full items-center gap-1.5",
-								"text-xs font-semibold uppercase tracking-widest text-neutral-500",
-								"hover:text-neutral-300 transition-colors",
-								"focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-violet-500 rounded",
-							].join(" ")}
-						>
-							<ChevronIcon expanded={isExpanded} />
-							{group}
-						</button>
+			{/* Group tabs — horizontally scrollable for >4 groups */}
+			<div className="px-4 pt-4">
+				<div
+					role="tablist"
+					aria-label="Uniform groups"
+					className="flex overflow-x-auto gap-1 scrollbar-none"
+				>
+					{groupNames.map((name) => {
+						const isActive = name === activeGroup;
+						return (
+							<button
+								key={name}
+								role="tab"
+								type="button"
+								aria-selected={isActive}
+								onClick={() => setActiveGroup(name)}
+								className={[
+									"flex-1 min-w-fit whitespace-nowrap rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+									isActive
+										? "border-neutral-600 bg-neutral-800 text-neutral-100"
+										: "border-neutral-800 bg-neutral-950 text-neutral-500 hover:border-neutral-700 hover:text-neutral-300",
+								].join(" ")}
+							>
+								{name}
+							</button>
+						);
+					})}
+				</div>
+			</div>
 
-						{/* Collapsible region */}
-						<div
-							id={regionId}
-							role="region"
-							aria-labelledby={headingId}
-							hidden={!isExpanded}
-							className="flex flex-col gap-3"
-						>
-							{defs.map((def) => {
-								const range = def.range ?? [0, 1];
-								return (
-									<Slider
-										key={def.name}
-										label={def.label}
-										name={def.name}
-										min={range[0]}
-										max={range[1]}
-										step={(range[1] - range[0]) / 255}
-										value={getValue(def)}
-										defaultValue={getUniformDefault(def)}
-										onChange={(v) => setUniform(def.name, v)}
-									/>
-								);
-							})}
-						</div>
-					</section>
-				);
-			})}
+			{/* Active group sliders */}
+			<div role="tabpanel" aria-label={activeGroup} className="flex flex-col gap-3 px-4 pt-4 pb-2">
+				{activeDefs.map((def) => {
+					const range = def.range ?? [0, 1];
+					return (
+						<Slider
+							key={def.name}
+							label={def.label}
+							name={def.name}
+							min={range[0]}
+							max={range[1]}
+							step={(range[1] - range[0]) / 255}
+							value={getValue(def)}
+							defaultValue={getUniformDefault(def)}
+							onChange={(v) => setUniform(def.name, v)}
+						/>
+					);
+				})}
+			</div>
 
-			<button
-				type="button"
-				onClick={() =>
-					resetUniforms(Object.fromEntries(manifest.uniforms.map((u) => [u.name, u.default])))
-				}
-				className={[
-					"mt-1 rounded-md border border-neutral-700 px-3 py-1.5 text-xs text-neutral-400",
-					"hover:border-neutral-500 hover:text-neutral-200 transition-colors",
-					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-				].join(" ")}
-			>
-				Reset to defaults
-			</button>
+			{/* Reset button */}
+			<div className="px-4 pb-4 pt-2">
+				<button
+					type="button"
+					onClick={() =>
+						resetUniforms(Object.fromEntries(manifest.uniforms.map((u) => [u.name, u.default])))
+					}
+					className={[
+						"rounded-md border border-neutral-700 px-3 py-1.5 text-xs text-neutral-400",
+						"hover:border-neutral-500 hover:text-neutral-200 transition-colors",
+						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+					].join(" ")}
+				>
+					Reset to defaults
+				</button>
+			</div>
 		</div>
 	);
 }

@@ -76,5 +76,91 @@
 			"group": "Environment",
 			"storage": "uint8"
 		}
+	],
+	"presets": [
+		{
+			"name": "Chrome glass",
+			"description": "Balanced crown glass reference",
+			"uniforms": {
+				"uIOR": 1.5,
+				"uDispersion": 0.03,
+				"uRadius": 0.45,
+				"uWobble": 0.05,
+				"uRoughness": 0.04,
+				"uEnvHue": 0.58,
+				"uEnvBright": 1.0,
+				"uFloorMix": 0.35
+			}
+		},
+		{
+			"name": "Turblu navy",
+			"description": "Brand navy environment with warm kick",
+			"uniforms": {
+				"uIOR": 1.52,
+				"uDispersion": 0.04,
+				"uRadius": 0.5,
+				"uWobble": 0.06,
+				"uRoughness": 0.05,
+				"uEnvHue": 0.65,
+				"uEnvBright": 0.85,
+				"uFloorMix": 0.5
+			}
+		},
+		{
+			"name": "Prism heavy",
+			"description": "Maximum chromatic dispersion",
+			"uniforms": {
+				"uIOR": 1.7,
+				"uDispersion": 0.12,
+				"uRadius": 0.45,
+				"uWobble": 0.04,
+				"uRoughness": 0.03,
+				"uEnvHue": 0.55,
+				"uEnvBright": 1.2,
+				"uFloorMix": 0.3
+			}
+		},
+		{
+			"name": "Ribbon flow",
+			"description": "Liquid swirls, heavy surface wobble",
+			"uniforms": {
+				"uIOR": 1.42,
+				"uDispersion": 0.06,
+				"uRadius": 0.55,
+				"uWobble": 0.35,
+				"uRoughness": 0.08,
+				"uEnvHue": 0.45,
+				"uEnvBright": 1.0,
+				"uFloorMix": 0.4
+			}
+		},
+		{
+			"name": "Obsidian",
+			"description": "Deep purple-black, mysterious",
+			"uniforms": {
+				"uIOR": 1.8,
+				"uDispersion": 0.02,
+				"uRadius": 0.48,
+				"uWobble": 0.03,
+				"uRoughness": 0.12,
+				"uEnvHue": 0.85,
+				"uEnvBright": 0.5,
+				"uFloorMix": 0.65
+			}
+		},
+		{
+			"name": "Warm gold",
+			"description": "Amber studio, looks like a paperweight",
+			"uniforms": {
+				"uIOR": 1.6,
+				"uDispersion": 0.05,
+				"uRadius": 0.52,
+				"uWobble": 0.04,
+				"uRoughness": 0.06,
+				"uEnvHue": 0.12,
+				"uEnvBright": 1.15,
+				"uFloorMix": 0.35
+			}
+		}
 	]
 }
