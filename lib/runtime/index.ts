@@ -1,9 +1,9 @@
 // lib/runtime/index.ts
 // ~1.5 KB WebGL 1 runtime. No dependencies. Vanilla TS strict.
 
-import { ShaderCompileError, compileShader, linkProgram } from "./compile";
+import { ContextLostError, ShaderCompileError, compileShader, linkProgram } from "./compile";
 
-export { ShaderCompileError } from "./compile";
+export { ContextLostError, ShaderCompileError } from "./compile";
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
@@ -83,12 +83,39 @@ function uploadUniform(
 export function createRuntime(canvas: HTMLCanvasElement, opts: RuntimeOptions): RuntimeInstance {
 	const dprCap = opts.dprCap ?? 2;
 
-	// Acquire context (rebind so narrowing is preserved through closures)
+	// Acquire context (rebind so narrowing is preserved through closures).
+	// `preserveDrawingBuffer: false` is default; we leave it that way.
 	const rawGl = canvas.getContext("webgl");
 	if (!rawGl) throw new Error("WebGL 1 not available");
 	const gl: WebGLRenderingContext = rawGl;
 
-	// Compile shaders
+	// Defensive: if a previous runtime (or tab backgrounding) left the context
+	// in a lost state, opt into restore and throw a recoverable error so the
+	// caller can remount. See compile.ts ContextLostError.
+	if (gl.isContextLost()) {
+		throw new ContextLostError(
+			"WebGL context is lost at createRuntime; remount the canvas to recover.",
+		);
+	}
+
+	// Context-loss recovery — if the GPU resets or the tab is suspended,
+	// call preventDefault() so the browser will fire webglcontextrestored
+	// later, and dispatch a custom event the React layer listens for.
+	function handleContextLost(e: Event): void {
+		e.preventDefault();
+		console.warn("[runtime] WebGL context lost; pausing until restored");
+		paused = true;
+		cancelAnimationFrame(rafId);
+	}
+	function handleContextRestored(): void {
+		console.info("[runtime] WebGL context restored — requesting remount");
+		canvas.dispatchEvent(new CustomEvent("shader-studio:context-restored"));
+	}
+	canvas.addEventListener("webglcontextlost", handleContextLost, false);
+	canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+
+	// Compile shaders — compile.ts helpers check isContextLost() internally
+	// and throw ContextLostError instead of a misleading compile error.
 	const vs = compileShader(gl, gl.VERTEX_SHADER, opts.vertSrc ?? DEFAULT_VERT);
 	const fs = compileShader(gl, gl.FRAGMENT_SHADER, opts.fragSrc);
 	const program = linkProgram(gl, vs, fs);
@@ -256,12 +283,18 @@ export function createRuntime(canvas: HTMLCanvasElement, opts: RuntimeOptions): 
 		io.disconnect();
 		resizeObserver.disconnect();
 		canvas.removeEventListener("mousemove", onMouseMove);
+		canvas.removeEventListener("webglcontextlost", handleContextLost);
+		canvas.removeEventListener("webglcontextrestored", handleContextRestored);
 		gl.deleteProgram(program);
 		gl.deleteShader(vs);
 		gl.deleteShader(fs);
 		if (buf) gl.deleteBuffer(buf);
-		const ext = gl.getExtension("WEBGL_lose_context");
-		if (ext) ext.loseContext();
+		// NOTE: do NOT call WEBGL_lose_context.loseContext() here.
+		// ShaderCanvas destroys + recreates the runtime on every shader swap
+		// (useEffect deps [fragSrc, manifest]); if we killed the context,
+		// the next createRuntime call on the same <canvas> would fail its
+		// first compileShader with a misleading "vertex shader compile error".
+		// Per-shader resources are already freed by deleteProgram/Shader/Buffer.
 	}
 
 	return { setUniform, setUniforms, pause, resume, destroy, gl };

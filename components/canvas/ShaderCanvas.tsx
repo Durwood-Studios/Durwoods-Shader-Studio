@@ -1,7 +1,7 @@
 "use client";
 
 import { TextOverlay } from "@/components/canvas/TextOverlay";
-import { ShaderCompileError, createRuntime } from "@/lib/runtime";
+import { ContextLostError, ShaderCompileError, createRuntime } from "@/lib/runtime";
 import type { ShaderManifest as RuntimeManifest } from "@/lib/runtime";
 import type { ShaderManifest } from "@/lib/shader-registry";
 import { useStore } from "@/lib/store";
@@ -56,6 +56,11 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [noWebGL, setNoWebGL] = useState(false);
+	// `remountKey` is incremented to force the canvas + runtime effect to
+	// re-run when we need to recover from a lost WebGL context. Each bump
+	// unmounts the <canvas>, so the browser allocates a fresh GL context
+	// on the next render — the only reliable way to recover.
+	const [remountKey, setRemountKey] = useState(0);
 
 	// FPS counter — DOM refs for imperative updates (no re-render per frame)
 	const fpsNodeRef = useRef<HTMLSpanElement>(null);
@@ -73,6 +78,11 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 	// ── Shader runtime effect ─────────────────────────────────────────────────
 
 	useEffect(() => {
+		// Referencing remountKey here so the effect re-runs when it bumps.
+		// The value drives a `key` prop on <canvas> to force a DOM remount
+		// (= fresh WebGL context) when recovering from ContextLostError.
+		void remountKey;
+
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
@@ -99,9 +109,18 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 				initial,
 			});
 		} catch (err) {
+			// ContextLostError is recoverable — remount the canvas so the
+			// browser allocates a fresh WebGL context. Never shown as a
+			// "compile error" to the user; the shader source is fine.
+			if (err instanceof ContextLostError) {
+				console.warn("[ShaderCanvas] Context lost at create; scheduling remount");
+				// Use a microtask so React finishes this effect cleanly before remount.
+				queueMicrotask(() => setRemountKey((k) => k + 1));
+				return;
+			}
 			const msg =
 				err instanceof ShaderCompileError
-					? `GLSL compile error:\n${err.message}`
+					? `GLSL compile error:\n${err.infoLog || err.message}`
 					: err instanceof Error
 						? err.message
 						: String(err);
@@ -110,6 +129,15 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 			setCompileError(msg);
 			return;
 		}
+
+		// Listen for the custom context-restored event fired by the runtime —
+		// the GPU reset or tab was suspended and woke back up. Trigger a
+		// remount so the runtime is rebuilt with a fresh context.
+		const handleRestoredEvent = () => {
+			console.info("[ShaderCanvas] Context restored; remounting");
+			setRemountKey((k) => k + 1);
+		};
+		canvas.addEventListener("shader-studio:context-restored", handleRestoredEvent);
 
 		const r = runtime;
 
@@ -141,6 +169,7 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 				return () => {
 					unsubscribe();
 					unsub();
+					canvas.removeEventListener("shader-studio:context-restored", handleRestoredEvent);
 					r.destroy();
 				};
 			}
@@ -159,9 +188,10 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 
 		return () => {
 			unsubscribe();
+			canvas.removeEventListener("shader-studio:context-restored", handleRestoredEvent);
 			r.destroy();
 		};
-	}, [effectiveFragSrc, manifest, setCompileError]);
+	}, [effectiveFragSrc, manifest, setCompileError, remountKey]);
 
 	// ── FPS counter — imperative DOM update every second ─────────────────────
 
@@ -237,8 +267,9 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 
 	return (
 		<>
-			{/* ── WebGL canvas ── */}
+			{/* ── WebGL canvas ── key bump forces full DOM remount for context recovery ── */}
 			<canvas
+				key={remountKey}
 				ref={canvasRef}
 				className="absolute inset-0 block h-full w-full"
 				aria-label="Shader preview canvas"
