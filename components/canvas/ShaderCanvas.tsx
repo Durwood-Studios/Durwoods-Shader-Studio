@@ -56,17 +56,33 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [noWebGL, setNoWebGL] = useState(false);
 
+	// FPS counter — DOM refs for imperative updates (no re-render per frame)
+	const fpsNodeRef = useRef<HTMLSpanElement>(null);
+	const msNodeRef = useRef<HTMLSpanElement>(null);
+	const fpsHudRef = useRef<HTMLDivElement>(null);
+
+	// Store state
+	const editedFragSrc = useStore((s) => s.editedFragSrc);
+	const setCompileError = useStore((s) => s.setCompileError);
+	const perfHud = useStore((s) => s.perfHud);
+	const textOverlay = useStore((s) => s.textOverlay);
+
+	// Effective frag src: prefer edited (Monaco) if present
+	const effectiveFragSrc = editedFragSrc ?? fragSrc;
+
+	// ── Shader runtime effect ─────────────────────────────────────────────────
+
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
-		// Feature-detect WebGL before attempting to create runtime
 		if (!isWebGLAvailable()) {
 			setNoWebGL(true);
 			return;
 		}
 
 		setError(null);
+		setCompileError(null);
 
 		const storeState = useStore.getState();
 		const initial: Record<string, number | number[]> = {};
@@ -78,7 +94,7 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 		let runtime: ReturnType<typeof createRuntime> | null = null;
 		try {
 			runtime = createRuntime(canvas, {
-				fragSrc,
+				fragSrc: effectiveFragSrc,
 				manifest: manifest as unknown as RuntimeManifest,
 				initial,
 			});
@@ -91,16 +107,15 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 						: String(err);
 			console.error("[ShaderCanvas]", err);
 			setError(msg);
+			setCompileError(msg);
 			return;
 		}
 
 		const r = runtime;
 
-		// Feature-detect matchMedia before using it
 		if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
 			const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 			if (motionQuery.matches) {
-				// Render exactly one frame at t=0 then pause — avoids black canvas
 				r.pause();
 			}
 
@@ -109,7 +124,6 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 				else r.resume();
 			};
 
-			// addEventListener on MediaQueryList — feature-detect as well
 			if (typeof motionQuery.addEventListener === "function") {
 				motionQuery.addEventListener("change", handleMotionChange);
 				const unsub = () => motionQuery.removeEventListener("change", handleMotionChange);
@@ -132,7 +146,7 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 			}
 		}
 
-		// Fallback path: no matchMedia — just subscribe and clean up
+		// Fallback path: no matchMedia
 		const unsubscribe = useStore.subscribe((state, prevState) => {
 			if (state.uniforms === prevState.uniforms) return;
 			for (const name of Object.keys(state.uniforms)) {
@@ -147,9 +161,52 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 			unsubscribe();
 			r.destroy();
 		};
-	}, [fragSrc, manifest]);
+	}, [effectiveFragSrc, manifest, setCompileError]);
 
-	// WebGL unavailable — show informative fallback, don't throw
+	// ── FPS counter — imperative DOM update every second ─────────────────────
+
+	useEffect(() => {
+		if (!perfHud) return;
+
+		// Rolling frame times (last 60 frames)
+		const frameTimes: number[] = [];
+		let lastFrameTime = performance.now();
+		let rafId = 0;
+
+		function rafLoop(now: number) {
+			const delta = now - lastFrameTime;
+			lastFrameTime = now;
+			frameTimes.push(delta);
+			if (frameTimes.length > 60) frameTimes.shift();
+			rafId = requestAnimationFrame(rafLoop);
+		}
+
+		rafId = requestAnimationFrame(rafLoop);
+
+		// Update DOM once per second
+		const intervalId = setInterval(() => {
+			if (frameTimes.length === 0) return;
+			const avgMs = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
+			const fps = Math.round(1000 / avgMs);
+			const ms = avgMs.toFixed(1);
+
+			if (fpsNodeRef.current) fpsNodeRef.current.textContent = `${fps} fps`;
+			if (msNodeRef.current) msNodeRef.current.textContent = `${ms}ms`;
+
+			// Color-code the HUD element
+			if (fpsHudRef.current) {
+				fpsHudRef.current.style.color = fps > 55 ? "#4ade80" : fps >= 30 ? "#facc15" : "#f87171";
+			}
+		}, 1000);
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			clearInterval(intervalId);
+		};
+	}, [perfHud]);
+
+	// ── WebGL unavailable fallback ────────────────────────────────────────────
+
 	if (noWebGL) {
 		return (
 			<div className="absolute inset-0 flex items-center justify-center bg-neutral-950 p-6">
@@ -178,14 +235,33 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 		);
 	}
 
+	// ── Text overlay alignment helper ─────────────────────────────────────────
+
+	const alignClass =
+		textOverlay.alignment === "left"
+			? "items-start text-left"
+			: textOverlay.alignment === "right"
+				? "items-end text-right"
+				: "items-center text-center";
+
+	const textColorClass = textOverlay.theme === "dark-text" ? "text-neutral-900" : "text-white";
+
+	const headlineDropShadow =
+		textOverlay.theme === "light-text"
+			? "drop-shadow(0 2px 8px rgba(0,0,0,0.8)) drop-shadow(0 1px 2px rgba(0,0,0,0.6))"
+			: "drop-shadow(0 2px 4px rgba(255,255,255,0.3))";
+
 	return (
 		<>
+			{/* ── WebGL canvas ── */}
 			<canvas
 				ref={canvasRef}
 				className="absolute inset-0 block h-full w-full"
 				aria-label="Shader preview canvas"
 				role="img"
 			/>
+
+			{/* ── Shader compile error overlay ── */}
 			{error && (
 				<div
 					role="alert"
@@ -195,6 +271,53 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 						Shader error
 					</div>
 					<pre className="whitespace-pre-wrap">{error}</pre>
+				</div>
+			)}
+
+			{/* ── FPS / ms counter — imperative update, no re-render per frame ── */}
+			{perfHud && (
+				<div
+					ref={fpsHudRef}
+					className="pointer-events-none absolute top-2 left-2 z-10 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-neutral-300"
+					aria-hidden="true"
+				>
+					<span ref={fpsNodeRef}>-- fps</span>
+					{" / "}
+					<span ref={msNodeRef}>--ms</span>
+				</div>
+			)}
+
+			{/* ── Text overlay for readability testing ── */}
+			{textOverlay.enabled && (
+				<div
+					className={[
+						"pointer-events-none absolute inset-0 z-20",
+						"flex flex-col justify-center px-6 md:px-12",
+						alignClass,
+					].join(" ")}
+					aria-hidden="true"
+				>
+					<div className={["max-w-4xl w-full", textColorClass].join(" ")}>
+						<h2
+							className="font-bold leading-tight tracking-tight"
+							style={{
+								fontSize: "clamp(2rem, 6vw, 5rem)",
+								filter: headlineDropShadow,
+							}}
+						>
+							{textOverlay.headline}
+						</h2>
+						<p
+							className="mt-4 leading-relaxed"
+							style={{
+								fontSize: "clamp(0.9rem, 1.5vw, 1.25rem)",
+								filter: headlineDropShadow,
+								opacity: 0.9,
+							}}
+						>
+							{textOverlay.subtitle}
+						</p>
+					</div>
 				</div>
 			)}
 		</>

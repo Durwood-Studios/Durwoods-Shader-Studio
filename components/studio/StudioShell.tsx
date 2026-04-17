@@ -8,6 +8,7 @@ import { LibraryRail } from "@/components/library/LibraryRail";
 import { Button } from "@/components/ui/Button";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { TabList, TabPanel, TabTrigger, Tabs } from "@/components/ui/Tabs";
+import { Toggle } from "@/components/ui/Toggle";
 import type { ShaderManifest as RuntimeManifest } from "@/lib/runtime";
 import { SHADER_REGISTRY, type ShaderManifest, getRegistryEntry } from "@/lib/shader-registry";
 import { useStore } from "@/lib/store";
@@ -48,6 +49,8 @@ async function copyToClipboard(text: string): Promise<void> {
 export function StudioShell({ shareId }: StudioShellProps) {
 	const activeShaderId = useStore((s) => s.activeShaderId);
 	const uniforms = useStore((s) => s.uniforms);
+	const textOverlay = useStore((s) => s.textOverlay);
+	const setTextOverlay = useStore((s) => s.setTextOverlay);
 
 	const entry = getRegistryEntry(activeShaderId) ?? FALLBACK_ENTRY;
 	const manifest = entry.manifest as ShaderManifest;
@@ -55,6 +58,7 @@ export function StudioShell({ shareId }: StudioShellProps) {
 
 	const [exportOpen, setExportOpen] = useState(false);
 	const [copied, setCopied] = useState(false);
+	const [overlayEditOpen, setOverlayEditOpen] = useState(false);
 
 	// Mobile drawer state
 	const [libraryOpen, setLibraryOpen] = useState(false);
@@ -189,6 +193,20 @@ export function StudioShell({ shareId }: StudioShellProps) {
 					>
 						{copied ? "Copied!" : "Share"}
 					</Button>
+
+					{/* ── Overlay toggle ── */}
+					<Toggle
+						pressed={textOverlay.enabled}
+						onPressedChange={(on) => {
+							setTextOverlay({ enabled: on });
+							if (on) setOverlayEditOpen(true);
+						}}
+						label="Toggle text overlay"
+					>
+						<span className="hidden sm:inline">Overlay</span>
+						<span className="sm:hidden">Aa</span>
+					</Toggle>
+
 					<Button
 						variant="primary"
 						size="sm"
@@ -202,6 +220,77 @@ export function StudioShell({ shareId }: StudioShellProps) {
 					</Button>
 				</div>
 			</header>
+
+			{/* ── Text overlay inline edit panel ── */}
+			{textOverlay.enabled && overlayEditOpen && (
+				<div className="shrink-0 border-b border-neutral-800 bg-neutral-900 px-4 py-2 flex flex-wrap items-center gap-3">
+					<span className="text-xs font-semibold text-neutral-400 shrink-0">Overlay</span>
+
+					<label className="flex flex-col gap-0.5 min-w-0 flex-1">
+						<span className="text-[10px] text-neutral-500 uppercase tracking-wider">Headline</span>
+						<input
+							type="text"
+							value={textOverlay.headline}
+							onChange={(e) => setTextOverlay({ headline: e.target.value })}
+							className="rounded bg-neutral-800 border border-neutral-700 px-2 py-0.5 text-xs text-neutral-200 focus:outline-none focus:ring-1 focus:ring-violet-500 w-full"
+							placeholder="Headline text"
+						/>
+					</label>
+
+					<label className="flex flex-col gap-0.5 flex-[2] min-w-0">
+						<span className="text-[10px] text-neutral-500 uppercase tracking-wider">Subtitle</span>
+						<input
+							type="text"
+							value={textOverlay.subtitle}
+							onChange={(e) => setTextOverlay({ subtitle: e.target.value })}
+							className="rounded bg-neutral-800 border border-neutral-700 px-2 py-0.5 text-xs text-neutral-200 focus:outline-none focus:ring-1 focus:ring-violet-500 w-full"
+							placeholder="Subtitle text"
+						/>
+					</label>
+
+					<label className="flex flex-col gap-0.5">
+						<span className="text-[10px] text-neutral-500 uppercase tracking-wider">Align</span>
+						<select
+							value={textOverlay.alignment}
+							onChange={(e) =>
+								setTextOverlay({
+									alignment: e.target.value as "center" | "left" | "right",
+								})
+							}
+							className="rounded bg-neutral-800 border border-neutral-700 px-2 py-0.5 text-xs text-neutral-200 focus:outline-none focus:ring-1 focus:ring-violet-500"
+						>
+							<option value="center">Center</option>
+							<option value="left">Left</option>
+							<option value="right">Right</option>
+						</select>
+					</label>
+
+					<label className="flex flex-col gap-0.5">
+						<span className="text-[10px] text-neutral-500 uppercase tracking-wider">Theme</span>
+						<select
+							value={textOverlay.theme}
+							onChange={(e) =>
+								setTextOverlay({
+									theme: e.target.value as "light-text" | "dark-text",
+								})
+							}
+							className="rounded bg-neutral-800 border border-neutral-700 px-2 py-0.5 text-xs text-neutral-200 focus:outline-none focus:ring-1 focus:ring-violet-500"
+						>
+							<option value="light-text">Light text</option>
+							<option value="dark-text">Dark text</option>
+						</select>
+					</label>
+
+					<button
+						type="button"
+						onClick={() => setOverlayEditOpen(false)}
+						aria-label="Close overlay editor"
+						className="ml-auto text-neutral-500 hover:text-neutral-300 text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-violet-500"
+					>
+						✕
+					</button>
+				</div>
+			)}
 
 			{/* ── Main area ── */}
 			<div className="relative min-h-0 flex-1">

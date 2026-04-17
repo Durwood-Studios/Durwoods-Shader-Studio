@@ -2,7 +2,9 @@
 	"id": "strange-attractor",
 	"version": 1,
 	"label": "Strange Attractor",
-	"description": "Glowing parametric ribbon approximating the Aizawa strange attractor, with additive segment accumulation and rainbow coloring.",
+	"description": "Aizawa-inspired strange attractor rendered as glowing accumulated ribbon.",
+	"category": "attractors",
+	"tags": ["aizawa", "chaotic-system", "parametric", "flow", "generative"],
 	"uniforms": [
 		{
 			"name": "uA",

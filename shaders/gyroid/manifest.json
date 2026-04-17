@@ -2,7 +2,9 @@
 	"id": "gyroid",
 	"version": 1,
 	"label": "Gyroid",
-	"description": "Raymarched triply periodic minimal surface morphing between Gyroid and Schwarz-P with metallic-glass shading.",
+	"description": "Triply periodic minimal surface — blend between Gyroid and Schwarz P.",
+	"category": "tpms",
+	"tags": ["gyroid", "schwarz-p", "minimal-surface", "periodic", "mathematical"],
 	"uniforms": [
 		{
 			"name": "uScale",

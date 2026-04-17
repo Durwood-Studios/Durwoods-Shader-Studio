@@ -2,7 +2,9 @@
 	"id": "julia-3d",
 	"version": 1,
 	"label": "Julia 3D",
-	"description": "Raymarched quaternion Julia set with orbit-trap coloring, Fresnel refraction, and animated camera orbit.",
+	"description": "Quaternion Julia set raymarched with orbit-trap color shading.",
+	"category": "fractals",
+	"tags": ["quaternion", "julia", "3d-fractal", "raymarching", "orbit-trap"],
 	"uniforms": [
 		{
 			"name": "uCx",

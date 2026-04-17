@@ -24,11 +24,32 @@ export interface Preset {
 	uniforms: Record<string, number | number[]>;
 }
 
+export type ShaderCategory =
+	| "primitives"
+	| "fractals"
+	| "tpms"
+	| "attractors"
+	| "gradients"
+	| "patterns"
+	| "noise";
+
+export const CATEGORY_LABELS: Record<ShaderCategory, string> = {
+	primitives: "Primitives",
+	fractals: "Fractals",
+	tpms: "Minimal Surfaces",
+	attractors: "Attractors",
+	gradients: "Gradients",
+	patterns: "Patterns",
+	noise: "Noise",
+};
+
 export interface ShaderManifest {
 	id: string;
 	version: number;
 	label: string;
 	description?: string;
+	category?: ShaderCategory;
+	tags?: string[];
 	uniforms: UniformDef[];
 	presets?: Preset[];
 }

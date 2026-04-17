@@ -2,7 +2,9 @@
 	"id": "glass-orb",
 	"version": 2,
 	"label": "Glass Orb",
-	"description": "Photorealistic glass/chrome sphere with chromatic dispersion, procedural studio HDR environment, Schlick fresnel, and sharp specular.",
+	"description": "Refractive glass sphere with chromatic dispersion over a procedural studio HDR environment.",
+	"category": "primitives",
+	"tags": ["glass", "sphere", "chromatic-dispersion", "refraction", "photoreal"],
 	"uniforms": [
 		{
 			"name": "uIOR",

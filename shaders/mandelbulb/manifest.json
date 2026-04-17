@@ -2,7 +2,9 @@
 	"id": "mandelbulb",
 	"version": 1,
 	"label": "Mandelbulb",
-	"description": "Raymarched degree-N Mandelbulb 3D fractal with orbit-trap coloring, Fresnel shading, and animated camera orbit.",
+	"description": "Degree-8 Mandelbulb fractal raymarched via distance estimator.",
+	"category": "fractals",
+	"tags": ["3d-fractal", "mandelbulb", "distance-estimator", "orbit-trap", "raymarching"],
 	"uniforms": [
 		{
 			"name": "uPower",
