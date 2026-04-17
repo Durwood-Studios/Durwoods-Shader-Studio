@@ -66,33 +66,34 @@ Every choice below has a reason. If you want to change one, update this doc firs
 Single Next.js app, no monorepo overhead.
 
 ```
-shader-studio/
-  app/                            # Next.js App Router
-    layout.tsx
-    page.tsx                      # the three-pane studio
-    s/[shareId]/page.tsx          # shareable preset URLs
-  components/
-    studio/                       # layout, toolbar, drawer
-    shaders-library/              # left-rail shader list
-    controls/                     # right-rail slider generator
-    editor/                       # right-rail Monaco wrapper (lazy)
-    canvas/                       # the center-pane WebGL surface
-    export/                       # the export drawer (component, config, embed)
-    ui/                           # shadcn components
-  lib/
-    runtime/                      # the ~1.5 KB WebGL runtime
-    url-codec/                    # binary-packed URL state
-    sandbox/                      # Web Worker for user GLSL
-    shader-loader/                # reads manifest, builds uniform forms
-  shaders-src/                    # GLSL source of truth
-    glass-orb/
-      shader.frag                 # GLSL with uniform annotations
-      manifest.json               # generated from annotations
-      README.md                   # authoring notes, visual reference
-    liquid-chrome/
-    ...
-  scripts/
-    generate-manifests.ts         # GLSL annotations → manifest.json + TS types
+app/                              # Next.js App Router
+  layout.tsx
+  page.tsx                        # the three-pane studio
+  s/[shareId]/page.tsx            # shareable preset URLs
+components/
+  studio/                         # layout, toolbar, drawer
+  library/                        # left-rail shader list
+  controls/                       # right-rail slider generator
+  editor/                         # right-rail Monaco wrapper (lazy)
+  canvas/                         # the center-pane WebGL surface
+  export/                         # the export drawer (component, config, embed)
+  ui/                             # shadcn components
+lib/
+  runtime/                        # the ~1.5 KB WebGL runtime
+  url-codec/                      # binary-packed URL state
+  sandbox/                        # Web Worker for user GLSL
+  shader-loader/                  # reads manifest, builds uniform forms
+  store/                          # Zustand store (index.ts)
+  shader-registry/                # static shader registry (index.ts)
+shaders/                          # GLSL source of truth
+  glass-orb/
+    shader.frag                   # GLSL with uniform annotations
+    manifest.json                 # generated from annotations
+    README.md                     # authoring notes, visual reference
+  liquid-chrome/
+  ...
+scripts/
+  generate-manifests.ts           # GLSL annotations → manifest.json + TS types
 ```
 
 ### 3.2 The shader runtime
@@ -128,7 +129,7 @@ Target: **under 400 chars per shader** so URLs survive Twitter, Slack, Discord t
 
 ### 3.5 The shader authoring format
 
-Every shader in `shaders-src/<name>/` has two committed files:
+Every shader in `shaders/<name>/` has two committed files:
 
 **`shader.frag`** — GLSL source with annotation comments:
 ```glsl

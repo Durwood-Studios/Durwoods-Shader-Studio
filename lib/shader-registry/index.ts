@@ -31,8 +31,8 @@ export interface RegistryEntry {
 	fragSrc: string;
 }
 
-import glassOrbFrag from "@/shaders-src/glass-orb/frag";
-import glassOrbManifest from "@/shaders-src/glass-orb/manifest.json";
+import glassOrbFrag from "@/shaders/glass-orb/frag";
+import glassOrbManifest from "@/shaders/glass-orb/manifest.json";
 
 export const SHADER_REGISTRY: RegistryEntry[] = [
 	{

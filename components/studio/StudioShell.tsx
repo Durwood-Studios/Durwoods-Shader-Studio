@@ -4,7 +4,7 @@ import { ShaderCanvas } from "@/components/canvas/ShaderCanvas";
 import { ControlsPanel } from "@/components/controls/ControlsPanel";
 import { CodeEditor } from "@/components/editor/CodeEditor";
 import { ExportDrawer } from "@/components/export/ExportDrawer";
-import { LibraryRail } from "@/components/shaders-library/LibraryRail";
+import { LibraryRail } from "@/components/library/LibraryRail";
 import { Button } from "@/components/ui/Button";
 import { TabList, TabPanel, TabTrigger, Tabs } from "@/components/ui/Tabs";
 import type { ShaderManifest as RuntimeManifest } from "@/lib/runtime";

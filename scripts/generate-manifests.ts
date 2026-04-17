@@ -2,9 +2,9 @@
 // scripts/generate-manifests.ts
 // Run with: pnpm gen:manifests   (add to package.json: "gen:manifests": "tsx scripts/generate-manifests.ts")
 //
-// For every directory in shaders-src/:
+// For every directory in shaders/:
 //   1. Parses shader.frag for @uniform annotation comments
-//   2. Writes shaders-src/<id>/manifest.json
+//   2. Writes shaders/<id>/manifest.json
 //   3. Copies shader.frag → public/shaders/<id>/shader.frag
 //   4. Writes lib/shader-loader/registry.generated.ts with SHADER_IDS const
 
@@ -97,7 +97,7 @@ function parseAnnotations(glsl: string, id: string): UniformDef[] {
 // ─── Paths ────────────────────────────────────────────────────────────────────
 
 const ROOT = path.resolve(__dirname, "..");
-const SHADERS_SRC = path.join(ROOT, "shaders-src");
+const SHADERS_SRC = path.join(ROOT, "shaders");
 const PUBLIC_SHADERS = path.join(ROOT, "public", "shaders");
 const REGISTRY_OUT = path.join(ROOT, "lib", "shader-loader", "registry.generated.ts");
 
@@ -105,7 +105,7 @@ const REGISTRY_OUT = path.join(ROOT, "lib", "shader-loader", "registry.generated
 
 function run(): void {
 	if (!fs.existsSync(SHADERS_SRC)) {
-		console.error(`shaders-src/ not found at ${SHADERS_SRC}`);
+		console.error(`shaders/ not found at ${SHADERS_SRC}`);
 		process.exit(1);
 	}
 

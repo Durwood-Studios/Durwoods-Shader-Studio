@@ -1,6 +1,6 @@
 // lib/shader-loader/index.ts
 // Loads a shader manifest + GLSL source by ID.
-// Manifests are read from /shaders-src/<id>/manifest.json via dynamic import.
+// Manifests are read from /shaders/<id>/manifest.json via dynamic import.
 // GLSL source is fetched from /shaders/<id>/shader.frag (static asset).
 
 import type { ShaderManifest } from "../runtime/index";
@@ -29,7 +29,7 @@ export async function loadShader(id: string): Promise<LoadedShader> {
 	// Dynamic import of the JSON manifest (bundler resolves at build time).
 	// Next.js treats resolveJsonModule + dynamic import from a known path as
 	// a static asset — the literal template here is intentional.
-	const manifestModule = (await import(`../../shaders-src/${id}/manifest.json`)) as {
+	const manifestModule = (await import(`../../shaders/${id}/manifest.json`)) as {
 		default: unknown;
 	};
 
