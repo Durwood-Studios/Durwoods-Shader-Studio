@@ -29,6 +29,13 @@ body > div:first-child {
 	}
 }
 
+/* reveal-word — initial hidden state; WAAPI animates to final state.
+   prefers-reduced-motion: TextOverlay.tsx skips the animation entirely
+   and renders words at their final visible state instead. */
+.reveal-word {
+	will-change: transform, opacity, filter;
+}
+
 /* Drawer transition — used by slide-over panels in StudioShell */
 .drawer-enter {
 	transform: translateX(-100%);

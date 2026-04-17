@@ -1,5 +1,6 @@
 "use client";
 
+import { TextOverlay } from "@/components/canvas/TextOverlay";
 import { ShaderCompileError, createRuntime } from "@/lib/runtime";
 import type { ShaderManifest as RuntimeManifest } from "@/lib/runtime";
 import type { ShaderManifest } from "@/lib/shader-registry";
@@ -65,7 +66,6 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 	const editedFragSrc = useStore((s) => s.editedFragSrc);
 	const setCompileError = useStore((s) => s.setCompileError);
 	const perfHud = useStore((s) => s.perfHud);
-	const textOverlay = useStore((s) => s.textOverlay);
 
 	// Effective frag src: prefer edited (Monaco) if present
 	const effectiveFragSrc = editedFragSrc ?? fragSrc;
@@ -235,22 +235,6 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 		);
 	}
 
-	// ── Text overlay alignment helper ─────────────────────────────────────────
-
-	const alignClass =
-		textOverlay.alignment === "left"
-			? "items-start text-left"
-			: textOverlay.alignment === "right"
-				? "items-end text-right"
-				: "items-center text-center";
-
-	const textColorClass = textOverlay.theme === "dark-text" ? "text-neutral-900" : "text-white";
-
-	const headlineDropShadow =
-		textOverlay.theme === "light-text"
-			? "drop-shadow(0 2px 8px rgba(0,0,0,0.8)) drop-shadow(0 1px 2px rgba(0,0,0,0.6))"
-			: "drop-shadow(0 2px 4px rgba(255,255,255,0.3))";
-
 	return (
 		<>
 			{/* ── WebGL canvas ── */}
@@ -287,39 +271,8 @@ export function ShaderCanvas({ fragSrc, manifest }: ShaderCanvasProps) {
 				</div>
 			)}
 
-			{/* ── Text overlay for readability testing ── */}
-			{textOverlay.enabled && (
-				<div
-					className={[
-						"pointer-events-none absolute inset-0 z-20",
-						"flex flex-col justify-center px-6 md:px-12",
-						alignClass,
-					].join(" ")}
-					aria-hidden="true"
-				>
-					<div className={["max-w-4xl w-full", textColorClass].join(" ")}>
-						<h2
-							className="font-bold leading-tight tracking-tight"
-							style={{
-								fontSize: "clamp(2rem, 6vw, 5rem)",
-								filter: headlineDropShadow,
-							}}
-						>
-							{textOverlay.headline}
-						</h2>
-						<p
-							className="mt-4 leading-relaxed"
-							style={{
-								fontSize: "clamp(0.9rem, 1.5vw, 1.25rem)",
-								filter: headlineDropShadow,
-								opacity: 0.9,
-							}}
-						>
-							{textOverlay.subtitle}
-						</p>
-					</div>
-				</div>
-			)}
+			{/* ── Animated text overlay — split-word WAAPI reveal ── */}
+			<TextOverlay />
 		</>
 	);
 }

@@ -46,7 +46,7 @@ Every choice below has a reason. If you want to change one, update this doc firs
 
 | Layer           | Pick                                           | Why                                                                   |
 | --------------- | ---------------------------------------------- | --------------------------------------------------------------------- |
-| Framework       | **Next.js 15.x App Router, TypeScript strict** | Already known stack from Turblu.                                      |
+| Framework       | **Next.js 15.x App Router, TypeScript strict** | Industry-standard, server + client rendering, strong typing.          |
 | Build tool      | **Webpack (Next 15 default, not Turbopack)**   | Turbopack still has WebGL source-map edge cases.                      |
 | Runtime         | **Node 22 LTS**                                | Current LTS.                                                          |
 | UI primitives   | **shadcn/ui + Tailwind v4**                    | Copy-paste, owned code, zero vendor lock.                             |
@@ -268,14 +268,14 @@ Enforcement:
 
 ## 8. Development workflow
 
-Copied from the Turblu dev loop. Do not deviate without updating this doc.
+Standardized across Durwood Studios projects. Do not deviate without updating this doc.
 
 ### 8.1 Two interfaces
 
 - **Claude (web chat):** planning, architecture, prompting strategy, decisions. Where we think.
 - **Claude Code (in VS Code):** live codebase access, implementation. Where we execute.
 
-Dustin uses Claude Web specifically to write and refine prompts for Claude Code. When Claude Code gets stuck, bring it back to Claude Web for better prompt wording.
+Claude Web is used specifically to write and refine prompts for Claude Code. When Claude Code gets stuck, bring it back to Claude Web for better prompt wording.
 
 ### 8.2 Standing rules for every Claude Code prompt
 

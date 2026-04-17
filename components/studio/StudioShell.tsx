@@ -7,6 +7,7 @@ import { ExportDrawer } from "@/components/export/ExportDrawer";
 import { LibraryRail } from "@/components/library/LibraryRail";
 import { Button } from "@/components/ui/Button";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LiquidGlass } from "@/components/ui/LiquidGlass";
 import { TabList, TabPanel, TabTrigger, Tabs } from "@/components/ui/Tabs";
 import { Toggle } from "@/components/ui/Toggle";
 import type { ShaderManifest as RuntimeManifest } from "@/lib/runtime";
@@ -139,87 +140,93 @@ export function StudioShell({ shareId }: StudioShellProps) {
 			}}
 		>
 			{/* ── Toolbar ── */}
-			<header className="flex h-11 shrink-0 items-center justify-between border-b border-neutral-800 px-4">
-				<div className="flex items-center gap-2">
-					{/* Mobile-only toggle buttons */}
-					<button
-						type="button"
-						onClick={() => {
-							setLibraryOpen((o) => !o);
-							setControlsOpen(false);
-						}}
-						aria-label="Toggle shader library"
-						aria-expanded={libraryOpen}
-						className={[
-							"flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors md:hidden",
-							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-							libraryOpen
-								? "bg-violet-600/20 text-violet-300"
-								: "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200",
-						].join(" ")}
-					>
-						☰
-					</button>
-					<button
-						type="button"
-						onClick={() => {
-							setControlsOpen((o) => !o);
-							setLibraryOpen(false);
-						}}
-						aria-label="Toggle controls panel"
-						aria-expanded={controlsOpen}
-						className={[
-							"flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors md:hidden",
-							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-							controlsOpen
-								? "bg-violet-600/20 text-violet-300"
-								: "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200",
-						].join(" ")}
-					>
-						⚙
-					</button>
+			<LiquidGlass
+				className="shrink-0 border-b border-neutral-800"
+				blur={16}
+				tint="rgba(10, 10, 10, 0.6)"
+			>
+				<header className="flex h-11 items-center justify-between px-4">
+					<div className="flex items-center gap-2">
+						{/* Mobile-only toggle buttons */}
+						<button
+							type="button"
+							onClick={() => {
+								setLibraryOpen((o) => !o);
+								setControlsOpen(false);
+							}}
+							aria-label="Toggle shader library"
+							aria-expanded={libraryOpen}
+							className={[
+								"flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors md:hidden",
+								"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+								libraryOpen
+									? "bg-violet-600/20 text-violet-300"
+									: "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200",
+							].join(" ")}
+						>
+							☰
+						</button>
+						<button
+							type="button"
+							onClick={() => {
+								setControlsOpen((o) => !o);
+								setLibraryOpen(false);
+							}}
+							aria-label="Toggle controls panel"
+							aria-expanded={controlsOpen}
+							className={[
+								"flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors md:hidden",
+								"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+								controlsOpen
+									? "bg-violet-600/20 text-violet-300"
+									: "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200",
+							].join(" ")}
+						>
+							⚙
+						</button>
 
-					<span className="text-sm font-semibold tracking-tight text-neutral-100 md:text-base">
-						Shader Studio
-					</span>
-				</div>
+						<span className="text-sm font-semibold tracking-tight text-neutral-100 md:text-base">
+							Shader Studio
+						</span>
+					</div>
 
-				<div className="flex items-center gap-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={handleShare}
-						aria-label="Copy share URL to clipboard"
-					>
-						{copied ? "Copied!" : "Share"}
-					</Button>
+					<div className="flex items-center gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={handleShare}
+							aria-label="Copy share URL to clipboard"
+						>
+							{copied ? "Copied!" : "Share"}
+						</Button>
 
-					{/* ── Overlay toggle ── */}
-					<Toggle
-						pressed={textOverlay.enabled}
-						onPressedChange={(on) => {
-							setTextOverlay({ enabled: on });
-							if (on) setOverlayEditOpen(true);
-						}}
-						label="Toggle text overlay"
-					>
-						<span className="hidden sm:inline">Overlay</span>
-						<span className="sm:hidden">Aa</span>
-					</Toggle>
+						{/* ── Overlay toggle ── */}
+						<Toggle
+							pressed={textOverlay.enabled}
+							onPressedChange={(on) => {
+								setTextOverlay({ enabled: on });
+								if (on) setOverlayEditOpen(true);
+							}}
+							label="Toggle text overlay"
+						>
+							<span className="hidden sm:inline">Overlay</span>
+							<span className="sm:hidden">Aa</span>
+						</Toggle>
 
-					<Button
-						variant="primary"
-						size="sm"
-						onClick={() => setExportOpen((o) => !o)}
-						aria-expanded={exportOpen}
-						aria-controls="export-drawer"
-					>
-						{/* ↗ on mobile, "Export" on larger */}
-						<span className="md:hidden">↗</span>
-						<span className="hidden md:inline">Export</span>
-					</Button>
-				</div>
-			</header>
+						<Button
+							variant="primary"
+							size="sm"
+							onClick={() => setExportOpen((o) => !o)}
+							aria-expanded={exportOpen}
+							aria-controls="export-drawer"
+						>
+							{/* ↗ on mobile, "Export" on larger */}
+							<span className="md:hidden">↗</span>
+							<span className="hidden md:inline">Export</span>
+						</Button>
+					</div>
+				</header>
+			</LiquidGlass>
 
 			{/* ── Text overlay inline edit panel ── */}
 			{textOverlay.enabled && overlayEditOpen && (

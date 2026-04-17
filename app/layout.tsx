@@ -1,3 +1,4 @@
+import { LiquidGlassFilter } from "@/components/ui/LiquidGlassFilter";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
@@ -38,7 +39,11 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en">
-			<body className="dark bg-neutral-950 text-neutral-100 antialiased">{children}</body>
+			<body className="dark bg-neutral-950 text-neutral-100 antialiased">
+				{/* Mount SVG filter defs once so every <LiquidGlass> can reference url(#liquid-glass) */}
+				<LiquidGlassFilter />
+				{children}
+			</body>
 		</html>
 	);
 }
